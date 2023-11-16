@@ -1,0 +1,62 @@
+<!-- Main Sidebar Container -->
+<aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <div class="text-center">
+        <a href="/" class="brand-link">
+            <!--img src="assets/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                style="opacity: .8"-->
+            <span class="brand-text font-weight-light">Kinnil CM</span>
+        </a>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img src="assets/img/kinnil_color.png" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <a href="/" class="d-block">{{userData.userName | slice:0:17}}</a>
+            </div>
+        </div>
+
+        <!-- Sidebar Menu -->
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                <div *ngFor="let m of menus; let i = index">
+                    <li class="nav-item" *ngIf="m.submenus.length <= 0 && m.isLateralMenu; else submenu">
+                        <a href="{{m.url}}" class="nav-link">
+                            <i class="nav-icon fas {{m.icon}}" style="padding-right: 10px;"></i>
+                            <p>{{m.name}}</p>
+                        </a>
+                    </li>
+                    <ng-template #submenu>
+                        <li class="nav-item" [ngClass]="'menu_' + i === menuOpen ? 'menu-is-opening menu-open' : ''">
+                            <a *ngIf="m.name != 'Ignite'" class="nav-link" href="javascript:void(0)"
+                                (click)="isSelectedMenu('menu_' + i)" data-toggle="collapse" aria-expanded="false">
+                                <i class="nav-icon fas {{m.icon}}" style="padding-right: 10px;"></i>
+                                <p>
+                                    {{m.name}}
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <div *ngFor="let submenu of m.submenus;" style="padding-left: 20px;">
+                                    <li class="nav-item" *ngIf="submenu.isLateralMenu && submenu.url != '/dashboard'">
+                                        <a href="{{submenu.url}}" class="nav-link">
+                                            <i class="fas {{submenu.icon}} nav-icon" style="padding-right: 10px;"></i>
+                                            <p>{{submenu.name}}</p>
+                                        </a>
+                                    </li>
+                                </div>
+                            </ul>
+                        </li>
+                    </ng-template>
+                </div>
+            </ul>
+        </nav>
+        <!-- /.sidebar-menu -->
+    </div>
+    <!-- /.sidebar -->
+</aside>

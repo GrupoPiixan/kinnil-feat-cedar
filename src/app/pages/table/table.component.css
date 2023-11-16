@@ -1,0 +1,13 @@
+.my-table {
+    border-spacing: 10;
+    border: 1px solid black;
+    border-radius: 25px;
+    -moz-border-radius: 20px;
+    padding: 2px;
+    border: none;
+}
+
+.border-radious {
+    border-radius: 25px;
+}
+

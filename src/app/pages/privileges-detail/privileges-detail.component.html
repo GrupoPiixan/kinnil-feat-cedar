@@ -1,0 +1,127 @@
+<div class="wrapper">
+
+    <app-navbar></app-navbar>
+
+    <app-sidebar></app-sidebar>
+
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1 class="m-0">Detalle de privilegios: {{userName}}</h1>
+                    </div>
+                    <!-- /.col -->
+                    <!--div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Dashboard v2</li>
+                    </ol>
+                </div-->
+                    <!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+        <div class="container-fluid">
+            <div class="col-md-12">
+                <div class="card card-teal">
+                    <div class="card-header" id="accordionPrivilegiosDet"   data-toggle="collapse" data-target="#privilegiosDet"  aria-expanded="false" aria-controls="privilegiosDet">
+                      <h5 class="card-title">Permisos</h5>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body show"  id="privilegiosDet" data-parent="#accordionPrivilegiosDet">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <table id="tablaWells" 
+                                    class="table table-striped table-bordered dt-responsive " style="width:100%">
+                                    <thead>
+                                    <tr>
+                                        <th>Menú</th>
+                                        <th>Página</th>
+                                        <th>Permisos</th>
+                                        <th>Opciones</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody *ngFor="let m of menus; let i = index">
+                                        <tr *ngIf="m.submenus.length <= 0">
+                                        <!--tr *ngIf="m.submenus.length <= 0 && m.idMenu !== 1"-->
+                                            <td>{{m.name}}</td>
+                                            <td>{{m.name}}</td>
+                                            <td>
+                                                <p>{{m.permissions}}</p>
+                                            </td>
+                                            <td *ngIf="verifiPrivileges([2,3])">
+                                                <div style="text-align: center;">
+                                                    <button type="button" class="btn-info" data-toggle="modal" data-target="#modalEditarUsuario" (click)="editRoleUser(m)" style="padding: 5px; margin-right: 10px;">
+                                                        <i class="fas fa-pencil"></i> Editar</button>
+                                                </div>
+                                            </td>
+                                            <td *ngIf="!verifiPrivileges([2,3])">
+                                                <p>Sin privilegios</p>
+                                            </td>
+                                        </tr>
+                                        <tr *ngFor="let submenu of m.submenus;">
+                                            <td>{{m.name}}</td>
+                                            <td>{{submenu.name}}</td>
+                                            <td>
+                                                <p>{{submenu.permissions}}</p>
+                                            </td>
+                                            <td *ngIf="verifiPrivileges([2,3])">
+                                                <div style="text-align: center;">
+                                                    <button type="button" class="btn-info" data-toggle="modal" data-target="#modalEditarUsuario" (click)="editRoleUser(submenu)" style="padding: 5px; margin-right: 10px;">
+                                                        <i class="fas fa-pencil"></i> Editar</button>
+                                                </div>
+                                            </td>
+                                            <td *ngIf="!verifiPrivileges([2,3])">
+                                                <p>Sin privilegios</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div> <!-- /.row -->
+                    </div> <!-- ./card-body -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inicio Modal para Editar Nuevo Usuario -->
+    <div class="modal fade" id="modalEditarUsuario" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Editar Usuario</h5>
+            <button type="button" class="close" id="modalEditarUsuarioCerrar" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                <div class="col-6">
+                    <div class="form-group">
+                        <label for="rol">Roles</label>
+                        <select class="input-group mb-3" [value]="privilege" [(ngModel)]="privilege">
+                            <option value="0">Sin privilegios</option>
+                            <option value="1">Ver</option>
+                            <option value="2">Ver y Editar</option>
+                            <option value="3">Ver, Editar, Crear y Eliminar</option>
+                        </select>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="submit" class="btn btn-primary" (click)="updatePrivileges()">Guardar</button>
+            </div>
+        </div>
+        </div>
+    </div>
+    <!--  Fin Modal para Editar Nuevo Usuario -->
+
+    <app-footer></app-footer>
+
+</div>

@@ -1,0 +1,157 @@
+
+<div class="wrapper">
+
+    <app-navbar></app-navbar>
+
+    <app-sidebar></app-sidebar>
+    <div class="content-wrapper" style="min-height: 512px;">
+      
+        <div class="col-md-12 bg-gcc">
+
+          <div class="content-header">
+            <div class="container-fluid">
+
+              <div class="row mb-2">
+                <div class="col-sm-4">
+                  <!-- <img src="/assets/img/fevid.png" alt="FEVID" style="width: 55%; padding-left: 6%;"> -->
+                </div>
+                <div class="col-sm-4" style="text-align-last: center;">
+
+                  <title class="ng-binding">Camión {{camion.Nombre}}</title>
+                  <h3 class="ng-binding"> Camión {{camion.Nombre}}</h3>
+                </div>
+                <div class="col-sm-4">
+                  <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a [routerLink]="['/dashboard']" routerLinkActive="router-link-active" >Inicio</a></li>
+                    <li class="breadcrumb-item active">Operaciones / Equipos / Detalles</li>
+                  </ol>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+          </div>
+          <section class="content">
+            <div class="row p-3">
+              <div class="col-6 ">
+                <div class="row">
+                  <div class="col-md-6 col-12">
+                    <div class="small-box bg-success" data-toggle="modal" data-target="#modalList">
+                      <div class="inner">
+                        <h4> Tiempo activo </h4>
+                      </div>
+
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12">
+                    <div class="small-box bg-info" data-toggle="modal" data-target="#modalList">
+                      <div class="inner">
+                        <h4> Tiempo inactivo </h4>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 col-12">
+                    <div class="small-box bg-clockout" data-toggle="modal" data-target="#modalList">
+                      <div class="inner">
+                        <h4>#  Ordenes de trabajo</h4>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6 col-12">
+                    <div class="small-box bg-warning " data-toggle="modal" data-target="#modalList">
+                      <div class="inner text-light">
+                        <h4>Ranking de actividad</h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 ">
+                <div class="small-box  bg-info">
+                  <div class=" row inner">
+                    <table>
+                      
+                        <tr>
+                          <td class="h6"> ID (tablilla):</td>
+                          <td class="px-3 ng-binding"> {{camion.IDSensor}}</td>
+                          <td class="h6"> Odómetro GPS:</td>
+                          <td class="px-3 ng-binding"> {{camion.gps}}</td>
+                        </tr>
+                        <tr>
+                          <td class="h6"> Tipo:</td>
+                          <td class="px-3 ng-binding"> {{camion.tipo}}</td>
+                          
+                        </tr>
+                        <tr>
+                          <td class="h6"> Placa:</td>
+                          <td class="px-3 ng-binding"> {{camion.placa}}</td>
+                          <td class="h6"> KM de último servicio:</td>
+                          <td class="px-3 ng-binding"> {{camion.km}}</td>
+                        </tr>
+                        <tr>
+                          <td class="h6"> Año:</td>
+                          <td class="px-3 ng-binding"> {{camion.anio}}</td>
+                          <td class="h6"> Estatus:</td>
+                          <td class="px-3">
+                            <!-- ngIf: assets.up==1 --><span ng-if="assets.up==1" class="ng-scope">Activo</span>
+                            <!-- end ngIf: assets.up==1 -->
+                            <!-- ngIf: assets.up==0 -->
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class="h6"> Marca:</td>
+                          <td class="px-3 ng-binding"> {{camion.marca}}</td>
+                          <td class="h6"> Último mantenimiento:</td>
+                          <td class="px-3 ng-binding"> {{camion.uMantenimiento}}</td>
+                        </tr>
+                        <tr>
+                          <td class="h6"> Modelo :</td>
+                          <td class="px-3 ng-binding"> {{camion.modelo}}</td>
+                          <td class="h6"> Próximo mantenimiento:</td>
+                          <td class="px-3 ng-binding"> {{camion.pMantenimiento}}</td>
+                        </tr>
+                      
+                    </table>
+
+                  </div>
+                  <div class="icon">
+                    
+                    <i class="fas fa-truck" style="font-size: 100px !important;"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="card card-teal">
+                    <div class="card-header" id="accordionCamiones"  data-toggle="collapse" data-target="#camiones"  aria-expanded="false" aria-controls="camiones">
+                      <h5 class="card-title">Reporte</h5>
+                      <div class="card-tools">
+                      </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body show"  id="camiones" data-parent="#accordionCamiones">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <app-table [dataRows]="dataRows" [dataTable]="dataTable"></app-table>
+                        </div>
+                      </div> <!-- /.row -->
+                    </div> <!-- ./card-body -->
+                  </div> <!-- /.card -->
+                </div><!-- /.col -->
+              </div>
+            </div>
+          </section><!-- /.content -->
+        </div>
+
+      </div>
+
+    
+
+    <app-footer></app-footer>
+
+</div>

@@ -1,0 +1,286 @@
+
+<div class="wrapper">
+
+    <app-navbar></app-navbar>
+
+    <app-sidebar></app-sidebar>
+
+    <div class="content-wrapper">
+         <!-- Content Header (Page header) -->
+         <div class="content-header">
+            <div class="container-fluid">
+              <div class="row mb-2">
+                <div class="col-sm-6">
+                  <h3 class="m-0 text-dark">Equipos</h3>
+                  
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                  <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                    <li class="breadcrumb-item active">Equipos</li>
+                  </ol>
+                </div><!-- /.col -->
+              </div><!-- /.row -->
+            </div><!-- /.container-fluid -->
+          </div>
+        <!-- /.content-header -->
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="card card-teal ">
+                  <div class="card-header"  id="accordionCamiones"   data-toggle="collapse" data-target="#camiones"  aria-expanded="false" aria-controls="camiones">
+                    <h5 class="card-title">Equipos</h5>
+                    <div class="card-tools">
+                      
+                    </div>
+                  </div>  
+                  <!-- /.card-header -->
+                  <div class="card-body show"  id="camiones" data-parent="#accordionCamiones">
+                    <div class="row">
+                      <div class="col-12 button-add">
+                        <div class="col-md-3 mb-3" >
+                          <button *ngIf="verifiPrivileges([3])" type="button" class="btn btn-block btn-info" data-toggle="modal"
+                            data-target="#modalNewMachine" (click)="onModal()">
+                            <i class="fas fa-plus"></i>Agregar nuevo
+                          </button>
+                        </div>
+                      </div>
+                      <br>
+                      <div class="col-md-12">
+                        <app-table [dataRows]="dataRows" [dataTable]="camionesTabla" (eventEdit)="edit($event)" (eventDelete)="delete($event)" (eventDetail)="detalle($event)"></app-table>
+                      </div>
+                    </div>
+                    <!-- /.row -->
+                  </div>
+                  <!-- ./card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+            </div>
+        </div>
+        </section>
+        
+        
+         <!-- Modal -->
+        <div class="modal fade" id="modalNewMachine" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalLabel" aria-hidden="true">
+         <div class="modal-dialog modal-lg" role="document">
+           <div class="modal-content">
+             <div class="modal-header">
+               <h5 class="modal-title" id="exampleModalLabel">Camiones
+               </h5>
+               <button type="button" class="close" data-dismiss="modal" aria-label="Close" >
+                 <span aria-hidden="true">&times;</span>
+               </button>
+             </div>
+             <form  [formGroup]="trucksForm" (ngSubmit)="onTrucks()">
+               <div class="modal-body">
+                <small style="color: red;" 
+                *ngIf="trucksForm.value.IDSensor ==null|| trucksForm.value.IDSensor ==''||
+                trucksForm.value.placa ==null|| trucksForm.value.placa ==''||
+                trucksForm.value.gps ==null|| trucksForm.value.gps ==''||
+                trucksForm.value.km ==null|| trucksForm.value.km ==''||
+                trucksForm.value.uMantenimiento ==null|| trucksForm.value.uMantenimiento ==''||
+                trucksForm.value.pMantenimiento ==null|| trucksForm.value.pMantenimiento ==''||
+                trucksForm.value.anio ==null|| trucksForm.value.anio ==''||
+                trucksForm.value.marca ==null|| trucksForm.value.marca ==''||
+                trucksForm.value.modelo ==null|| trucksForm.value.modelo ==''||
+                trucksForm.value.lOperacion ==null|| trucksForm.value.lOperacion ==''||
+                trucksForm.value.lDetenido ==null|| trucksForm.value.lDetenido ==''||
+                trucksForm.value.pMax ==null|| trucksForm.value.pMax =='' || trucksForm.value.pMin ==null|| trucksForm.value.pMin ==''||
+                trucksForm.value.tMax ==null|| trucksForm.value.tMax =='' || trucksForm.value.tMin ==null|| trucksForm.value.tMin ==''" 
+                 class="p-invalid">*Campos obligatorios</small>
+                 <div class="tab-content" id="myTabContent">
+                   <div class="tab-pane fade show active" id="personal" role="tabpanel" aria-labelledby="home-tab">
+                     <div class="row form-new">
+                      <div class="col-md-6">
+                        <div class="p-field">
+                          <label for="Nombre">*Nombre</label>
+                          <input id="Nombre" type="text" 
+                          formControlName="Nombre" 
+                          class="p-invalid input-group-append form-control" pInputText  [(ngModel)]="trucksForm.value.Nombre" required />
+                          
+                         
+                          
+                      </div>
+                      </div>
+                       <div class="col-md-6">
+                        <div class="p-field">
+                          <label for="IDSensor">*ID (tablilla)</label>
+                          <input id="IDSensor" type="text" 
+                          formControlName="IDSensor" 
+                          class="p-invalid input-group-append form-control" pInputText  [(ngModel)]="trucksForm.value.IDSensor" required />
+                          
+                         
+                          
+                      </div>
+                         
+                         <!-- <label>ID (tablilla)</label>
+                         <div class="input-group mb-3">
+                           <input type="text" class="form-control" id="IDSensor" ngModel name="IDSensor"  name="IDSensor" formControlName="IDSensor"   required>
+                           <div class="input-group-append">
+                             <span class="input-group-text"><i class="fas fa-user"></i></span>
+                           </div>   
+                         </div> -->
+                       </div> 
+                       <div class="col-md-6">
+                         <label>*Tipo de camión</label>
+                         <select class="input-group mb-3" formControlName="tipo">
+                          <option value=""  selected>Seleccione tipo</option>
+                          <option *ngFor="let camion of camiones" [value]="camion">{{camion}}</option>
+                          </select>
+                         
+                       </div>
+                       <div class="col-md-6">
+                         <label>*Placa</label>
+                         <div class="input-group mb-3">
+                           <input type="text" [(ngModel)]="trucksForm.value.placa"  class="p-invalid input-group-append form-control" pInputText formControlName="placa" placeholder="AAAA-AA" >
+                           <div *ngIf="trucksForm.invalid " >
+                             
+                             <!-- <small style="color: red;" *ngIf="trucksForm.controls.placa.errors?.pattern"  class="p-invalid">Solo usar mayúsculas</small> -->
+                            </div>
+                         </div>
+                       </div>
+                       <div class="col-md-6">
+                         <label>*Odómetro GPS </label>
+                         <div class="input-group mb-3">
+                           <input type="text" [(ngModel)]="trucksForm.value.gps"  formControlName="gps" class="p-invalid input-group-append form-control" pInputText>
+                           <!-- <small style="color: red;" *ngIf="trucksForm.controls.gps.errors?.pattern"  class="p-invalid">Solo números</small> -->
+                           
+                         
+                         </div>
+                       </div>
+                       <div class="col-md-6">
+                         <label>*KM de último servicio </label>
+                         <div class="input-group mb-3">
+                          <input type="number" [(ngModel)]="trucksForm.value.km"  class="p-invalid input-group-append form-control" pInputText formControlName="km" >
+                        
+                          
+                        </div>
+                       </div>
+                       <div class="col-md-6">
+                         <label>*Último mantenimiento </label>
+                         <div class="input-group mb-3">
+                           <input type="date"  class="p-invalid input-group-append form-control" [(ngModel)]=trucksForm.value.uMantenimiento pInputText formControlName="uMantenimiento" [max]="date | date: 'yyyy-MM-dd'" >
+                          
+                         </div>
+                       </div>
+                       <div class="col-md-6" ng-if="user.hr > 3">
+                         <label>*Próximo mantenimiento </label>
+                         <div class="input-group mb-3">
+                           <input type="date" [(ngModel)]=trucksForm.value.pMantenimiento class="p-invalid input-group-append form-control" pInputText formControlName="pMantenimiento" [min]="date | date: 'yyyy-MM-dd'" >
+                           
+                         </div>
+                       </div>
+                       <div class="col-md-6" ng-if="user.hr > 3">
+                        <label>*Año</label>
+                        <div class="input-group mb-3">
+                          <input type="text"  [(ngModel)]="trucksForm.value.anio" class="p-invalid input-group-append form-control" pInputText formControlName="anio">
+                          <!-- <small style="color: red;" *ngIf="trucksForm.controls.anio.errors?.pattern"  class="p-invalid">Solo números</small> -->
+                        
+                        </div>
+                      </div>
+                      <div class="col-md-6" ng-if="user.hr > 3">
+                        <label>*Marca</label>
+                        <div class="input-group mb-3">
+                          <input type="text"  [(ngModel)]="trucksForm.value.marca" class="p-invalid input-group-append form-control" pInputText formControlName="marca">
+                          
+                        </div>
+                      </div>
+                      <div class="col-md-6" ng-if="user.hr > 3">
+                        <label>*Modelo</label>
+                        <div class="input-group mb-3">
+                          <input type="text"  [(ngModel)]="trucksForm.value.modelo" class="p-invalid input-group-append form-control" pInputText formControlName="modelo">
+                         
+                        </div>
+                      </div>
+                      <div class="col-md-6" ng-if="user.hr > 3">
+                        <label>*Lectura operacion(Seg) </label>
+                        <div class="input-group mb-3">
+                          <input type="number"   [(ngModel)]="trucksForm.value.lOperacion" class="p-invalid input-group-append form-control" pInputText formControlName="lOperacion" [min]="3" [max]="15" >
+                        </div>
+                        <div *ngIf="trucksForm.invalid " >
+                         
+                          <small style="color: red;" *ngIf="trucksForm.value.lOperacion < 3 || trucksForm.value.lOperacion > 15"  class="p-invalid">Ingrese un valor de 3 a 15</small>
+                        </div>
+                        
+                      </div>
+                      <div class="col-md-6" ng-if="user.hr > 3">
+                        <label>*Lectura detenido(Min)</label>
+                        <div class="input-group mb-3">
+                          <input type="number"   [(ngModel)]="trucksForm.value.lDetenido" class="p-invalid input-group-append form-control" pInputText formControlName="lDetenido" >
+                          
+                        </div>
+                      </div>
+                      <div class="col-md-6" >
+                        <label>Presión(Bar)</label>
+                        <div class="row">
+                          <div class="col-md-4" >
+                            <label>*Mínimo</label>
+                            <input type="number"  [(ngModel)]="trucksForm.value.pMin" class="p-invalid input-group-append form-control" pInputText formControlName="pMin" >
+                        </div>
+                        <div class="col-md-4" >
+                          <label>*Set point</label>
+                          <input type="number" class="p-invalid input-group-append form-control" pInputText formControlName="pSPoint" >
+                        </div>
+                        <div class="col-md-4" >
+                          <label>*Máximo</label>
+                          <input type="number"  class="p-invalid input-group-append form-control" pInputText formControlName="pMax" [min]="trucksForm.value.pMin" >
+                        </div>
+
+                        </div>
+                        <div *ngIf="trucksForm.invalid " >
+                         
+                          <small style="color: red;" *ngIf="trucksForm.value.pMax < trucksForm.value.pMin"  class="p-invalid">Campo mínimo no puuede ser mayor al máximo</small>
+                        </div>
+                      </div>
+                      <div class="col-md-6" >
+                        
+                      </div>
+                      <div class="col-md-6" >
+                        <label>Temperatura(°C)</label>
+                        <div class="row">
+                          <div class="col-md-4" >
+                            <label>*Mínimo</label> 
+                            <input type="number" [(ngModel)]="trucksForm.value.tMin"  class="p-invalid input-group-append form-control" pInputText  formControlName="tMin" min="1"  maxlength="3" >
+                        </div>
+                        <div class="col-md-4" >
+                          <label>*Set point</label>
+                          <input type="number" class="p-invalid input-group-append form-control" pInputText formControlName="tSPoint" >
+                        </div>
+                        <div class="col-md-4" >
+                          <label>*Máximo</label>
+                          <input type="number"  [(ngModel)]="trucksForm.value.tMax"  class="p-invalid input-group-append form-control" pInputText
+                         formControlName="tMax" [min]="trucksForm.value.tMin" maxlength="3">
+                        </div>
+
+                        </div>
+                        <div class="row" *ngIf="trucksForm.invalid " >
+                         
+                          <small style="color: red;" *ngIf="trucksForm.value.tMax < trucksForm.value.tMin"  class="p-invalid">Campo mínimo no puuede ser mayor al máximo</small>
+                        </div>
+                        
+                      </div>
+                     </div>
+
+                     <!-- <button class="btn btn-info btnNext" type="button">Siguiente</button> -->
+                   </div>
+                 </div>
+               </div>
+               <div class="modal-footer">
+                 <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-times" aria-hidden="true"></i>Cerrar</button>
+                 <button id="salve" type="submit" class="btn btn-success" *ngIf="trucksForm.value.uid ===null "><i class="fas fa-save"></i> Guardar</button>
+                 <button type="button" class="btn btn-success" *ngIf="trucksForm.value.uid !=null" (click)='onEditTruck(trucksForm.value.uid)'><i class="fas fa-save"></i> Actualizar</button>
+               </div>
+             </form>
+           </div>
+         </div>
+       </div>
+
+    </div>
+
+    <app-footer></app-footer>
+
+</div>

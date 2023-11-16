@@ -1,0 +1,17 @@
+@import url(https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css);
+
+.card-tools:after {
+        font: normal normal normal 14px FontAwesome;
+        font-size: inherit;
+        text-rendering: auto;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      content: "\f068";
+      transform: rotate(0deg) ;
+      transition: all linear 0.25s;
+      
+      float: right;
+      }   
+    .collapsed>.card-tools:after {
+            content: "\f067";
+    }

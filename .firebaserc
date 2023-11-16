@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "kinnil-feat-cedar": {
+      "hosting": {
+        "kinill-cm": [
+          "kinnil-feat-cedar"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "kinnil-feat-cedar"
+  }
+}

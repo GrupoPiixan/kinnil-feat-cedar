@@ -1,0 +1,219 @@
+<div class="wrapper">
+
+  <app-navbar></app-navbar>
+
+  <app-sidebar></app-sidebar>
+
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Dashboard</h1>
+          </div>
+          <!-- /.col -->
+          <!--div class="col-sm-6">
+              <ol class="breadcrumb float-sm-right">
+                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                <li class="breadcrumb-item active">Dashboard v2</li>
+              </ol>
+            </div-->
+          <!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card card-teal ">
+            <div class="card-header accordion-item " id="accordionEquipos" data-toggle="collapse"
+              data-target="#equiposConectados" aria-expanded="false" aria-controls="equiposConectados">
+
+              <h5 class="card-title ">Equipos conectados a sistema de condición de variables (condition Monitoring)</h5>
+              <div class="card-tools">
+              </div>
+
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body show" id="equiposConectados" data-parent="#accordionEquipos">
+              <div class="row">
+                <!--<div class="col-md-10"></div>-->
+                <!-- <div class="col-md-2">
+                            <label>Equipos conectados</label>
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-clipboard" aria-hidden="true"></i>
+                                </span>
+                              </div>
+                              <input type="text" class="form-control" value="" readonly>
+                            </div>
+                          </div>
+                          <div class="col-md-2">
+                            <label>Equipos Alarmados</label>
+                            <div class="input-group mb-3">
+                              <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fa fa-clipboard" aria-hidden="true"></i></span>
+                              </div>
+                              <input type="text" class="form-control" value="" readonly>
+                            </div>
+                          </div> -->
+                <div class="col-md-12 global">
+                  <app-table [dataRows]="dataRows" [dataTable]="sensoresTabla" (eventDetail)="detalle($event)">
+                  </app-table>
+                  <!-- <app-table [dataTable]="sensoresTabla" [buttons]="_botones" (eventDetail)="detalle($event)" *ngIf="showComponents"></app-table> -->
+
+                </div>
+              </div> <!-- /.row -->
+            </div> <!-- ./card-body -->
+          </div> <!-- /.card -->
+        </div><!-- /.col -->
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header" id="accordionUbicacion" data-toggle="collapse" data-target="#ubucacion"
+              aria-controls="ubucacion">
+              <h5 class="card-title">Ubicación</h5>
+              <div class="card-tools">
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body show" id="ubucacion" data-parent="#accordionUbicacion">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="w-100 py-3 py-lg-0" style="height: 295px;">
+                    <app-google-maps [objectData]="tablaSensoresMap" [contMap]="contMap" *ngIf="showComponents">
+                    </app-google-maps>
+                  </div>
+                </div>
+                <div class="col-lg-6 my-auto">
+                  <div class="small-box bg-info text-light">
+                    <div class="inner">
+                      <h4>Equipos</h4>
+                      <h6 class="text-box" style="text-align: left;">Activos - {{ contDeviceActive }}</h6>
+                      <h6 class="text-box" style="text-align: left;">Inactivos - {{ contDeviceNotActive }}</h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-microchip" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                  <div class="small-box bg-info text-light">
+                    <div class="inner">
+                      <h4>Dispositivos</h4>
+                      <h6 class="text-box" style="text-align: left;">Encendido - {{ contDeviceActive }}</h6>
+                      <h6 class="text-box" style="text-align: left;">En Pausa - {{ contDevicePause }}</h6>
+                      <h6 class="text-box" style="text-align: left;">Inactivo - {{ contDeviceInactive }}</h6>
+                      <h6 class="text-box" style="text-align: left;">Apagado - {{ contDeviceOff }}</h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-tablet" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- /.row -->
+            </div> <!-- ./card-body -->
+          </div> <!-- /.card -->
+        </div><!-- /.col -->
+        <div class="col-md-12" hidden>
+          <div class="card card-teal">
+            <div class="card-header" id="accordionDashboard" data-toggle="collapse" data-target="#Dashboard"
+              aria-controls="Dashboard">
+              <h5 class="card-title">Dashboard</h5>
+              <div class="card-tools">
+              </div>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body show" id="Dashboard" data-parent="#accordionDashboard">
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="small-box bg-clockout">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno -</h6>
+                      <h6 class="text-box" style="text-align: left;"> Relleno - </h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="small-box bg-clockout">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="small-box bg-clockout">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno -</h6>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="small-box bg-clockout">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="small-box bg-warning">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left; padding-left: 6%;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left; padding-left: 6%;">Relleno </h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="small-box bg-warning">
+                    <div class="inner">
+                      <h4>Relleno</h4>
+                      <h6 class="text-box" style="text-align: left;">Relleno </h6>
+                      <h6 class="text-box" style="text-align: left;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left; padding-left: 6%;">Relleno - </h6>
+                      <h6 class="text-box" style="text-align: left; padding-left: 6%;">Relleno</h6>
+                    </div>
+                    <div class="icon">
+                      <i class="fa fa-clipboard" aria-hidden="true"></i>
+
+                    </div>
+                  </div>
+                </div>
+              </div> <!-- /.row -->
+            </div> <!-- ./card-body -->
+          </div> <!-- /.card -->
+        </div><!-- /.col -->
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+  <app-footer></app-footer>
+
+</div>
