@@ -61,8 +61,8 @@ class Server {
     // * Método para inicializar las rutas
     routes() {
         this.app.use(this.usuariosPath, require('../routes/usuariosRoute'));
-        this.app.use(this.quectelPath, require('../routes/quectelRoute'));
-        require('../routes/socketRoute');
+        //this.app.use(this.quectelPath, require('../routes/quectelRoute'));
+        require('../routes/iotCoreRoute');
     }
 
     // * Método para inicializar el servidor

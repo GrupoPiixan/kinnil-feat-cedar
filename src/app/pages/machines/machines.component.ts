@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 import {
-  AbstractControl,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -16,11 +15,8 @@ import { environment } from 'src/environments/environment';
 // * Utils
 import { CheckPrivilegesService } from '../../utils/check-privileges.service';
 
-import { AccordionModule } from 'primeng/accordion';     // * accordion and accordion tab
-import { MenuItem } from 'primeng/api';                  // * api
-import { Subject } from 'rxjs';
-
 declare const $: any;
+declare const io: any;
 
 @Component({
   selector: 'app-machines',
@@ -118,8 +114,6 @@ export class MachinesComponent implements OnInit {
   };
   dataRows:Array<any>=[];
 
-
-
   constructor(private formBuilder: FormBuilder,
     private service: GetDataService,
     private checkPrivileges: CheckPrivilegesService,
@@ -127,6 +121,12 @@ export class MachinesComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.getData();
+    this.connectToSocket();
+  }
+
+  // * Obtenemos los datos de los camiones
+  getData() {
     this.service.getTrucksData().snapshotChanges().subscribe(dataT => {
       this.tablaCamiones = []
       this.dataRows=[]
@@ -196,7 +196,7 @@ export class MachinesComponent implements OnInit {
       alert('Datos inválidos, favor de revisar la información')
     }
   }
- 
+
   // * Obtenemos los privilegios del usuario
   verifiPrivileges(privileges: any): boolean {
     return this.checkPrivileges.checkPrivileges(privileges, this.idMenuPage);
@@ -211,6 +211,7 @@ export class MachinesComponent implements OnInit {
     });
    
   }
+
   // * Abrir modal de editar
   edit(data: any) {
     this.tablaCamiones.forEach((camion: any) => {
@@ -231,6 +232,15 @@ export class MachinesComponent implements OnInit {
           });
         }
       }
+    });
+  }
+
+  // * Conexión con el socket
+  connectToSocket() {
+    const socket = io(environment.urlSocketIO);
+
+    socket.on('connect', () => {
+      console.log('Conectado al servidor', socket.id);
     });
   }
 

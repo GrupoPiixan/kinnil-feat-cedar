@@ -4,11 +4,11 @@ const moment = require('moment');
 const request = require('request');
 
 const firebase = require('../database/config');
-const { botStart } = require('./telegramBot');
+//const { botStart } = require('./telegramBot');
 
 console.log('Iniciando servicio de alertas');
 
-let bot = null;
+//let bot = null;
 
 // * Constantes de los tiempos de los estados
 const Pausa = 3;
@@ -23,10 +23,10 @@ let chatsSendTelegram = [];
 let phonesUsers = [];
 let phonesSendUsers = [];
 
-const initBot = async () => {
+/*const initBot = async () => {
     bot = await botStart();
 }
-initBot();
+initBot();*/
 
 // * Cron que se ejecuta cada minuto
 cron.schedule('* * * * *', () => updateStatusTruck());
@@ -234,7 +234,7 @@ const sendTelegramAlert = (msg, key) => {
     try {
         for (let i = 0; i < chatsTelegram.length; i++) {
             if (chatsSendTelegram.find(element => element === `${key}_${chatsTelegram[i]}`) === undefined) {
-                bot.telegram.sendMessage(chatsTelegram[i], msg);
+                //bot.telegram.sendMessage(chatsTelegram[i], msg);
                 chatsSendTelegram.push(`${key}_${chatsTelegram[i]}`);
                 console.log(`Run Send: ${key}_${chatsTelegram[i]} - `, chatsSendTelegram);
             }
