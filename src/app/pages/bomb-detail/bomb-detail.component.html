@@ -12,8 +12,8 @@
               <!-- <img src="/assets/img/fevid.png" alt="FEVID" style="width: 55%; padding-left: 6%;"> -->
             </div>
             <div class="col-sm-4" style="text-align-last: center;">
-              <title class="ng-binding">Bomba </title>
-              <h3 class="ng-binding"> Bomba </h3>
+              <title class="ng-binding">Locación </title>
+              <h3 class="ng-binding"> {{ tablaSensores?.camion?.Nombre }} - Base {{ baseNumber }} </h3>
             </div>
             <div class="col-sm-4">
               <ol class="breadcrumb float-sm-right">
@@ -62,7 +62,7 @@
             </div>
             <div class="row">
               <div class="col-12">
-                <h4>Generar reporte de registros de la maquina: {{ tablaSensores.sensor?.id }}</h4>
+                <h4>Generar reporte de registros de la base: {{ tablaSensores.sensor?.idBoard }}</h4>
                 <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
                   <div class="row">
                     <div class="col-12 col-lg-6">
@@ -88,17 +88,59 @@
               <div class="col-12 col-lg-6">
                 <div class="small-box" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> Temperatura: {{tablaSensores.sensor?.a2| number: '1.1-2'}} C°</h4>
+                    <h4> FT/SEC: {{tablaSensores.sensor?.r_ftMin| number: '1.1-2'}} </h4>
                   </div>
                 </div>
               </div>
               <div class="col-12 col-lg-6">
                 <div class="small-box" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> Presión: {{tablaSensores.sensor?.a1| number: '1.1-2'}} psi </h4>
+                    <h4> RPM: {{tablaSensores.sensor?.r_RPM| number: '1.1-2'}}  </h4>
                   </div>
                   <h4></h4>
                 </div>
+              </div>
+            </div>
+            <div class="row mt-4 p-4">
+              <div class="col-6">
+                <table>
+                  <tr>
+                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 1</h3> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                  </tr>
+                  <tr>
+                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 2</h3> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                  </tr>
+                  <tr>
+                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 3</h3> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                  </tr>
+                  <tr>
+                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Conveyor</h3> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                  </tr>
+                </table>
+              </div>
+              <div class="col-6">
+                <table>
+                  <tr>
+                    <td class="h6 font-weight-bold"><h3 class="font-bold">Estatus:</h3></td>
+                    <td class="h6 font-weight-bold"><h4> Open</h4></td>
+                  </tr>
+                  <tr>
+                    <td class="h6 font-weight-bold"><h3 class="font-bold">Ultima conexión: </h3></td>
+                    <td class="h6 font-weight-bold ps-4"><h4>14-02-2023</h4></td>
+                  </tr>
+                  <tr>
+                    <td class="h6 font-weight-bold"><h3 class="font-bold">¿En línea?</h3></td>
+                    <td class="h6 font-weight-bold"><h4> Sí</h4></td>
+                  </tr>
+                </table>
               </div>
             </div>
           </div>

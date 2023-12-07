@@ -17,6 +17,11 @@ const aws_crt = require('aws-crt');
 const iot = aws_crt.iot;
 const mqtt_crt = aws_crt.mqtt;
 
+// * Modelo de datos del quectel
+const { saveDataPLC } = require('../models/plcModel');
+
+let tempBoards = {};
+
 const iotCoreServer = async () => {
     const decoder = new TextDecoder('utf-8');
 
@@ -52,7 +57,7 @@ const iotCoreServer = async () => {
         // * Método para escuchar los mensajes de los clientes
         socket.on(topics[0], async (message) => {
             console.log("Received from web", message);
-            
+
             // * Se notifica a los tablillas
             await connection.publish(topics[3], message, mqtt.QoS.AtLeastOnce);
             console.log("Message sent to boards");
@@ -64,11 +69,76 @@ const iotCoreServer = async () => {
         const data = JSON.parse(decoder.decode(payload));
         console.log("Received from", topic, data);
 
-        // ! Aquí se debe de mandar a guardar a la base de datos
+        if (tempBoards[data.idBoard] === undefined) {
+            console.log('New data from board, saving');
+            tempBoards[data.idBoard] = data;
+            // * Se guarda en la base de datos
+            await saveDataPLC(data);
+            // * Se notifica a la webs
+            io.emit(topics[2], data);
+            return;
+        }
 
+        if (JSON.stringify(tempBoards[data.idBoard]) === JSON.stringify(data)) {
+            console.log('The data is the same, nothing saved');
+            return;
+        }
+
+        console.log('The data is different, saving new data');
+        tempBoards[data.idBoard] = data;
+        // * Se guarda en la base de datos
+        await saveDataPLC(data);
         // * Se notifica a la webs
         io.emit(topics[2], data);
     });
+
+    /*setInterval(async () => {
+        console.log('Sending random data');
+        let r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        let r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+
+        let data = {
+            "idBoard": "1256",
+            "r_ftMin": r_ftMin,
+            "r_RPM": r_RPM,
+            "w_OffOn": 0,
+            "w_openSilo1": 0,
+            "w_closedSilo1": 0,
+            "r_manualSilo1": 0,
+            "w_openSilo2": 0,
+            "w_closedSilo2": 0,
+            "r_manualSilo2": 0,
+            "w_openSilo3": 0,
+            "w_closedSilo3": 0,
+            "r_manualSilo3": 0,
+            "r_conveyorOn": 0,
+            "w_resetHorometro5s": 0,
+            "r_alertMaintenance": 0
+        };
+
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.idBoard = "7520";
+        data.r_ftMin = r_ftMin;
+        data.r_RPM = r_RPM;
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.idBoard = "9632";
+        data.r_ftMin = r_ftMin;
+        data.r_RPM = r_RPM;
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.idBoard = "1118";
+        data.r_ftMin = r_ftMin;
+        data.r_RPM = r_RPM;
+        await saveDataPLC(data);
+    }, 5000);*/
 };
 
 module.exports = {

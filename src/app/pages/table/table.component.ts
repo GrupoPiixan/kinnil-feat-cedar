@@ -156,8 +156,6 @@ export class TableComponent implements OnChanges {
       const minPressure = parseFloat(value[5]);
       const maxPressure = parseFloat(value[6]);
 
-      console.log(pressure, minPressure, maxPressure);
-
       if (value[2] === 'Apagado') return '';
       if (value[2] === 'Inactivo' || value[2] === 'En Pausa') return 'bg-warning';
       if (pressure < (minPressure - (minPressure * (tolerancePercentage / 100)))) return 'bg-danger';

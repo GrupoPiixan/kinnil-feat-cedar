@@ -38,6 +38,8 @@ export class BombDetailComponent implements OnInit {
   tablaSensores: any = [];
   truck: any = []
 
+  baseNumber: number = 0;
+
   // * rango de grafica
   rango: Date = new Date();
   fecha = new Date();
@@ -83,19 +85,32 @@ export class BombDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.uid = this.route.snapshot.paramMap.get("uid") || '';
-    this.service.getTruckData(this.uid).subscribe(dataT => {
+    this.service.getData('quectel', this.uid).subscribe(dataSensor => {
+      dataSensor.map(sensor => {
+        this.service.getTruckData(this.uid).subscribe(dataT => {
+          dataT.map(camion => {
+            this.truck = camion.payload.doc.data();
+            this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
+            this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.idBoard) + 1;
+            console.log("TABLA SENSORES",this.tablaSensores)
+          });
+        });
+      });
+    });
+    
+    /*this.service.getTruckData(this.uid).subscribe(dataT => {
+      
       dataT.map(camion => {
         this.truck = camion.payload.doc.data();
-        console.log(this.truck);
+        console.log("TRUCK", this.truck);
         this.service.getData('quectel', this.uid).subscribe(dataSensor => {
           dataSensor.map(sensor => {
             this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
-
             console.log(this.tablaSensores)
           });
         });
       })
-    });
+    });*/
   }
 
   getTempBgColor() {
@@ -119,28 +134,41 @@ export class BombDetailComponent implements OnInit {
         [null, `Fecha Inicio: ${this.reportForm.value.initDate}`, null, `Fecha Final: ${this.reportForm.value.finishDate}`],
         [null],
         [null],
-        ['Registro', 'Día', 'Hora', 'Presión - a1', 'Temperatura - a2']
+        ['Registro', 'Día', 'Hora', 'RPM', 'FT/SEC', 'Indicador silo 1 abierto en modo manual', 'Indicador silo 2 abierto en modo manual', 'Indicador silo 3 abierto en modo manual',
+      'Indicador bandas encendidas','Alerta mantenimento banda, horas cumplidas']
       ];
 
     const respReport = await this.service.generateReport(this.reportForm.value.initDate, this.reportForm.value.finishDate);
     respReport.forEach(dataReport => {
       for (let i = 0; i < dataReport.docs.length; i++) {
         const element = dataReport.docs[i].data() as {
-          a1: string,
-          a2: string,
+          r_RPM: string,
+          r_ftMin: string,
+          r_manualSilo1: string,
+          r_manualSilo2: string,
+          r_manualSilo3: string,
+          r_conveyorOn: string,
+          r_alertMaintenance: string
           creacionRegistro: {
             nanoseconds: number,
             seconds: number
           }
         };
+        
+        console.log("Elemento", element)
         const date = new Date(element.creacionRegistro.seconds * 1000);
 
         const data = [
           `${date.getFullYear()}/${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()} ${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
           `${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()}/${date.getFullYear()}`,
           `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
-          element.a1.toString(),
-          element.a2.toString()
+          element.r_RPM.toString(),
+          element.r_ftMin.toString(),
+          element.r_manualSilo1.toString(),
+          element.r_manualSilo2.toString(),
+          element.r_manualSilo3.toString(),
+          element.r_conveyorOn.toString(),
+          element.r_alertMaintenance.toString()
         ];
 
         tbody.push(data as [])
@@ -149,7 +177,7 @@ export class BombDetailComponent implements OnInit {
       var wb = XLSX.utils.book_new();
       var ws = XLSX.utils.aoa_to_sheet([[]]);
 
-      XLSX.utils.book_append_sheet(wb, ws, "KinnilCM-ReporteMaquina");
+      XLSX.utils.book_append_sheet(wb, ws, "KinnilCM-ReporteBase");
       XLSX.utils.sheet_add_aoa(ws, reportHeader, { origin: "A1" });
       XLSX.utils.sheet_add_aoa(ws, tbody, { origin: "A6" });
 
@@ -168,7 +196,7 @@ export class BombDetailComponent implements OnInit {
       ws['!cols'][4] = { width: 20 };
       ws['!cols'][5] = { width: 20 };
 
-      XLSX.writeFile(wb, "KinnilCM-ReporteMaquina.xlsx", { bookSST: true, cellStyles: true, bookImages: true });
+      XLSX.writeFile(wb, "KinnilCM-ReporteBase.xlsx", { bookSST: true, cellStyles: true, bookImages: true });
     });
   }
 
