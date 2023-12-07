@@ -43,7 +43,7 @@
                         <div class="col-md-3 mb-3" >
                           <button *ngIf="verifiPrivileges([3])" type="button" class="btn btn-block btn-info" data-toggle="modal"
                             data-target="#modalNewMachine" (click)="onModal()">
-                            <i class="fas fa-plus"></i>Agregar nuevo
+                            <i class="fas fa-plus"></i> Agregar nuevo
                           </button>
                         </div>
                       </div>
@@ -78,7 +78,7 @@
              <form  [formGroup]="trucksForm" (ngSubmit)="onTrucks()">
                <div class="modal-body">
                 <small style="color: red;" 
-                *ngIf="trucksForm.value.IDSensor ==null|| trucksForm.value.IDSensor ==''||
+                *ngIf="trucksForm.value.noBases ==null|| trucksForm.value.noBases ==''||
                 trucksForm.value.placa ==null|| trucksForm.value.placa ==''||
                 trucksForm.value.gps ==null|| trucksForm.value.gps ==''||
                 trucksForm.value.km ==null|| trucksForm.value.km ==''||
@@ -101,19 +101,17 @@
                           <input id="Nombre" type="text" 
                           formControlName="Nombre" 
                           class="p-invalid input-group-append form-control" pInputText  [(ngModel)]="trucksForm.value.Nombre" required />
-                          
-                         
-                          
                       </div>
                       </div>
                        <div class="col-md-6">
                         <div class="p-field">
-                          <label for="IDSensor">*ID (tablilla)</label>
-                          <input id="IDSensor" type="text" 
-                          formControlName="IDSensor" 
-                          class="p-invalid input-group-append form-control" pInputText  [(ngModel)]="trucksForm.value.IDSensor" required />
-                          
-                         
+                          <label for="noBases">*Cantidad de bases</label>
+                          <select class="input-group mb-3" formControlName="noBases">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            </select>
                           
                       </div>
                          
@@ -125,41 +123,6 @@
                            </div>   
                          </div> -->
                        </div> 
-                       <div class="col-md-6">
-                         <label>*Tipo de camión</label>
-                         <select class="input-group mb-3" formControlName="tipo">
-                          <option value=""  selected>Seleccione tipo</option>
-                          <option *ngFor="let camion of camiones" [value]="camion">{{camion}}</option>
-                          </select>
-                         
-                       </div>
-                       <div class="col-md-6">
-                         <label>*Placa</label>
-                         <div class="input-group mb-3">
-                           <input type="text" [(ngModel)]="trucksForm.value.placa"  class="p-invalid input-group-append form-control" pInputText formControlName="placa" placeholder="AAAA-AA" >
-                           <div *ngIf="trucksForm.invalid " >
-                             
-                             <!-- <small style="color: red;" *ngIf="trucksForm.controls.placa.errors?.pattern"  class="p-invalid">Solo usar mayúsculas</small> -->
-                            </div>
-                         </div>
-                       </div>
-                       <div class="col-md-6">
-                         <label>*Odómetro GPS </label>
-                         <div class="input-group mb-3">
-                           <input type="text" [(ngModel)]="trucksForm.value.gps"  formControlName="gps" class="p-invalid input-group-append form-control" pInputText>
-                           <!-- <small style="color: red;" *ngIf="trucksForm.controls.gps.errors?.pattern"  class="p-invalid">Solo números</small> -->
-                           
-                         
-                         </div>
-                       </div>
-                       <div class="col-md-6">
-                         <label>*KM de último servicio </label>
-                         <div class="input-group mb-3">
-                          <input type="number" [(ngModel)]="trucksForm.value.km"  class="p-invalid input-group-append form-control" pInputText formControlName="km" >
-                        
-                          
-                        </div>
-                       </div>
                        <div class="col-md-6">
                          <label>*Último mantenimiento </label>
                          <div class="input-group mb-3">
@@ -174,28 +137,6 @@
                            
                          </div>
                        </div>
-                       <div class="col-md-6" ng-if="user.hr > 3">
-                        <label>*Año</label>
-                        <div class="input-group mb-3">
-                          <input type="text"  [(ngModel)]="trucksForm.value.anio" class="p-invalid input-group-append form-control" pInputText formControlName="anio">
-                          <!-- <small style="color: red;" *ngIf="trucksForm.controls.anio.errors?.pattern"  class="p-invalid">Solo números</small> -->
-                        
-                        </div>
-                      </div>
-                      <div class="col-md-6" ng-if="user.hr > 3">
-                        <label>*Marca</label>
-                        <div class="input-group mb-3">
-                          <input type="text"  [(ngModel)]="trucksForm.value.marca" class="p-invalid input-group-append form-control" pInputText formControlName="marca">
-                          
-                        </div>
-                      </div>
-                      <div class="col-md-6" ng-if="user.hr > 3">
-                        <label>*Modelo</label>
-                        <div class="input-group mb-3">
-                          <input type="text"  [(ngModel)]="trucksForm.value.modelo" class="p-invalid input-group-append form-control" pInputText formControlName="modelo">
-                         
-                        </div>
-                      </div>
                       <div class="col-md-6" ng-if="user.hr > 3">
                         <label>*Lectura operacion(Seg) </label>
                         <div class="input-group mb-3">
@@ -214,7 +155,7 @@
                           
                         </div>
                       </div>
-                      <div class="col-md-6" >
+                      <div class="col-md-12" >
                         <label>Presión(Bar)</label>
                         <div class="row">
                           <div class="col-md-4" >
@@ -239,7 +180,7 @@
                       <div class="col-md-6" >
                         
                       </div>
-                      <div class="col-md-6" >
+                      <div class="col-md-12" >
                         <label>Temperatura(°C)</label>
                         <div class="row">
                           <div class="col-md-4" >

@@ -32,7 +32,7 @@
                         <button class="btn btn-info btn-sm editar" *ngIf="dataTable.buttons.edit.show"
                             (click)="onEdit(data)"><i class="fas fa-pencil-alt"></i> {{ dataTable.buttons.edit.text }}</button>
                         <button class="btn btn-danger btn-sm eliminar" *ngIf="dataTable.buttons.delete.show"
-                            (click)="onDelete(data)"><i class="fas fa-window-close"></i> {{ dataTable.buttons.delete.text }}</button>
+                            (click)="onDelete(data)"><i class="fas fa-trash"></i> {{ dataTable.buttons.delete.text }}</button>
                         <button class="btn btn-info btn-sm detalles" *ngIf="dataTable.buttons.detail.show"
                             (click)="onDetail(data)"><i class="fas fa-info-circle"></i> {{ dataTable.buttons.detail.text }}</button>
                     </div>
