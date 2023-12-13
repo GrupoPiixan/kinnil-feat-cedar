@@ -16,7 +16,6 @@ import { environment } from 'src/environments/environment';
 import { CheckPrivilegesService } from '../../utils/check-privileges.service';
 
 declare const $: any;
-declare const io: any;
 
 @Component({
   selector: 'app-machines',
@@ -97,7 +96,6 @@ export class MachinesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getData();
-    this.connectToSocket();
   }
 
   // * Obtenemos los datos de los camiones
@@ -109,7 +107,6 @@ export class MachinesComponent implements OnInit {
         let camion: any = truck.payload.doc.data();
         camion.uid = truck.payload.doc.id;
         this.tablaCamiones.push(camion);
-        console.log("data table" , this.tablaCamiones)
         this.dataRows.push(([camion.uid, camion.Nombre, camion.noBases]));
       });
       // * Mostramos el mapa y tabla de sensores
@@ -120,7 +117,6 @@ export class MachinesComponent implements OnInit {
   // * Crear camión nuevo
   onTrucks() {
     let confirm = false;
-    console.log(this.trucksForm);
     if (this.trucksForm.valid) {
       // this.tablaCamiones.forEach((x: any) => {
       //   if (x.noBases == this.trucksForm.value.noBases) {
@@ -193,9 +189,7 @@ export class MachinesComponent implements OnInit {
 
   // * Abrir modal de editar
   edit(data: any) {
-    console.log("edit", data)
     this.tablaCamiones.forEach((camion: any) => {
-      console.log("camion", camion)
       if (camion.uid === data.uid) {
         this.trucksForm.setValue(camion);
         $("#modalNewMachine").modal("show")
@@ -213,15 +207,6 @@ export class MachinesComponent implements OnInit {
           });
         }
       }
-    });
-  }
-
-  // * Conexión con el socket
-  connectToSocket() {
-    const socket = io(environment.urlSocketIO);
-
-    socket.on('connect', () => {
-      console.log('Conectado al servidor', socket.id);
     });
   }
 

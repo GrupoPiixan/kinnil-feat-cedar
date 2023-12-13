@@ -39,7 +39,6 @@ export class GraphComponent implements OnInit {
 
     const idBomb = this.routeparam.snapshot.paramMap.get('uid');
 
-
     // * initialize chart options:
     this.options = {
       title: {
@@ -151,14 +150,14 @@ export class GraphComponent implements OnInit {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.r_RPM
+            temp.bands_rpm
           ]
         };
         let datoTemperatura = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.r_ftMin
+            temp.bands_ftmin
           ]
         };
         this.preison.push(datoPresion);
