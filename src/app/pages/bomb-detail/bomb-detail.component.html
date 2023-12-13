@@ -67,11 +67,13 @@
                   <div class="row">
                     <div class="col-12 col-lg-6">
                       <label for="initDate">Fecha de inicio</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="initDate" formControlName="initDate">
+                      <input type="date" class="p-invalid input-group-append form-control" id="initDate"
+                        formControlName="initDate">
                     </div>
                     <div class="col-12 col-lg-6">
                       <label for="finishDate">Fecha de termino</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="finishDate" formControlName="finishDate">
+                      <input type="date" class="p-invalid input-group-append form-control" id="finishDate"
+                        formControlName="finishDate">
                     </div>
                   </div>
                   <div class="row pt-2">
@@ -88,58 +90,102 @@
               <div class="col-12 col-lg-6">
                 <div class="small-box" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> FT/SEC: {{tablaSensores.sensor?.r_ftMin| number: '1.1-2'}} </h4>
+                    <h4> FT/SEC: {{tablaSensores.sensor?.bands_ftmin| number: '1.1-2'}} </h4>
                   </div>
                 </div>
               </div>
               <div class="col-12 col-lg-6">
                 <div class="small-box" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> RPM: {{tablaSensores.sensor?.r_RPM| number: '1.1-2'}}  </h4>
+                    <h4> RPM: {{tablaSensores.sensor?.bands_rpm| number: '1.1-2'}} </h4>
                   </div>
                   <h4></h4>
                 </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <h3 class="font-bold">Ultima conexión:</h3>
+              </div>
+              <div class="col-6">
+                <h4 class="font-bold">14-02-2023</h4>
               </div>
             </div>
             <div class="row mt-4 p-4">
               <div class="col-6">
                 <table>
                   <tr>
-                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 1</h3> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Silo 1</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Estatus:</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h4> {{tablaSensores.sensor?.st_silo_1}}</h4>
+                    </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_1 == 'CLOSED'"> <button
+                        id="playS1" class="btn btn-success btn-circle"  (click)="openSilo(1)" [disabled]="deshabilitarBotonS1" ><i
+                          class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_1 == 'OPEN'"> <button
+                        id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)" [disabled]="deshabilitarBotonStopS1"><i class="fas fa-stop"></i></button> </td>
+
                   </tr>
                   <tr>
-                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 2</h3> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Silo 2</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Estatus:</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h4> {{tablaSensores.sensor?.st_silo_2}}</h4>
+                    </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_2 == 'CLOSED'"> <button
+                        id="playS2" class="btn btn-success btn-circle"  (click)="openSilo(2)" [disabled]="deshabilitarBotonS2" ><i
+                          class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_2 == 'OPEN'"> <button
+                        id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)" [disabled]="deshabilitarBotonStopS2"><i class="fas fa-stop"></i></button> </td>
                   </tr>
                   <tr>
-                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Silo 3</h3> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Silo 3</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Estatus:</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h4> {{tablaSensores.sensor?.st_silo_3}}</h4>
+                    </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_3 == 'CLOSED'"> <button
+                        id="playS3" class="btn btn-success btn-circle" (click)="openSilo(3)" [disabled]="deshabilitarBotonS3"><i
+                          class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_3 == 'OPEN'"> <button
+                        id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)" [disabled]="deshabilitarBotonStopS3"><i class="fas fa-stop"></i></button> </td>
                   </tr>
                   <tr>
-                    <td class="h6 font-weight-bold"> <h3 class="font-bold">Conveyor</h3> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-success btn-circle"><i class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2"> <button class="btn btn-danger-circle btn-danger"><i class="fas fa-stop"></i></button> </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Conveyor</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h3 class="font-bold">Estatus:</h3>
+                    </td>
+                    <td class="h6 font-weight-bold">
+                      <h4> {{tablaSensores.sensor?.st_bands}} </h4>
+                    </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_bands == 'STOPPED'"> <button
+                        class="btn btn-success btn-circle" [disabled]="deshabilitarBotonC"><i class="fas fa-play"></i></button> </td>
+                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_bands == 'RUNNING'"> <button
+                        class="btn btn-danger-circle btn-danger" (click)="stoppedBand()" [disabled]="deshabilitarBotonStopC"><i class="fas fa-stop"></i></button> </td>
                   </tr>
                 </table>
               </div>
               <div class="col-6">
                 <table>
-                  <tr>
-                    <td class="h6 font-weight-bold"><h3 class="font-bold">Estatus:</h3></td>
-                    <td class="h6 font-weight-bold"><h4> Open</h4></td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold"><h3 class="font-bold">Ultima conexión: </h3></td>
-                    <td class="h6 font-weight-bold ps-4"><h4>14-02-2023</h4></td>
-                  </tr>
-                  <tr>
+                  <!-- <tr>
                     <td class="h6 font-weight-bold"><h3 class="font-bold">¿En línea?</h3></td>
                     <td class="h6 font-weight-bold"><h4> Sí</h4></td>
-                  </tr>
+                  </tr> -->
                 </table>
               </div>
             </div>

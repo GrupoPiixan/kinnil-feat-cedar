@@ -147,13 +147,13 @@ export class DashboardComponent implements OnInit {
         this.dataRows.push([
           data.sensor.idBoard,
           data.camion.Nombre,
-          data.sensor.r_ftMin,
-          data.sensor.r_RPM,
-          data.sensor.r_manualSilo1,
-          data.sensor.r_manualSilo2,
-          data.sensor.r_manualSilo3,
-          data.sensor.r_conveyorOn,
-          data.sensor.r_alertMaintenance
+          data.sensor.bands_ftmin,
+          data.sensor.bands_rpm,
+          data.sensor.st_silo_1,
+          data.sensor.st_silo_2,
+          data.sensor.st_silo_3,
+          data.sensor.st_bands,
+          data.sensor.maintenance
         ]);
       });
 

@@ -98,47 +98,42 @@ const iotCoreServer = async () => {
         let r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
 
         let data = {
-            "idBoard": "1256",
-            "r_ftMin": r_ftMin,
-            "r_RPM": r_RPM,
-            "w_OffOn": 0,
-            "w_openSilo1": 0,
-            "w_closedSilo1": 0,
-            "r_manualSilo1": 0,
-            "w_openSilo2": 0,
-            "w_closedSilo2": 0,
-            "r_manualSilo2": 0,
-            "w_openSilo3": 0,
-            "w_closedSilo3": 0,
-            "r_manualSilo3": 0,
-            "r_conveyorOn": 0,
-            "w_resetHorometro5s": 0,
-            "r_alertMaintenance": 0
+            board_id: "eth_iot_0001",
+            type: "status",                // status" --> all variables status
+            plc_st: "PLUGGED",             // PLUGGED" --> PLC is plugged to board, "UNPLUGGED" --> PLC is unplugged
+            plc_conn: true,                // rue --> board is connected to modbus PLC correctly, false -> modbus error
+            bands_ftmin: 0,              // ands speeed in ft/min 
+            bands_rpm: 0,                // ands speed in RPM´s
+            st_bands: "RUNNING",           // RUNNING" --> bands are running, "STOPPED" --> bands are stopped
+            st_silo_1: "OPEN",             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
+            st_silo_2: "CLOSED",           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
+            st_silo_3: "CLOSED",           // OPEN" --> silo 3 is open, "CLOSED" --> silo 3 is closed
+            maintenance: "OFF"             // OFF" --> alert not triggered, "ON" --> alert triggered
         };
 
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "7520";
-        data.r_ftMin = r_ftMin;
-        data.r_RPM = r_RPM;
+        data.idBoard = "eth_iot_0001";
+        data.bands_ftmin = r_ftMin;
+        data.bands_rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "9632";
-        data.r_ftMin = r_ftMin;
-        data.r_RPM = r_RPM;
+        data.idBoard = "eth_iot_0002";
+        data.bands_ftmin = r_ftMin;
+        data.bands_rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "1118";
-        data.r_ftMin = r_ftMin;
-        data.r_RPM = r_RPM;
+        data.idBoard = "eth_iot_0003";
+        data.bands_ftmin = r_ftMin;
+        data.bands_rpm = r_RPM;
         await saveDataPLC(data);
-    }, 5000);*/
+    }, 35000);*/
 };
 
 module.exports = {
