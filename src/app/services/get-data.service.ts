@@ -11,11 +11,11 @@ export class GetDataService {
   constructor(private afs: AngularFirestore) { }
 
   getData(collection: string, id: string) {
-    return this.afs.collection(collection, ref => ref.where('idBoard', '==', id).orderBy('creacionRegistro', 'desc').limit(1)).snapshotChanges();
+    return this.afs.collection(collection, ref => ref.where('board_id', '==', id).orderBy('creacionRegistro', 'desc').limit(1)).snapshotChanges();
   }
 
   getDataChart(collection: string, id: string) {
-    return this.afs.collection(collection, ref => ref.where('idBoard', '==', id).orderBy('creacionRegistro', 'desc').limit(50)).get();
+    return this.afs.collection(collection, ref => ref.where('board_id', '==', id).orderBy('creacionRegistro', 'desc').limit(50)).get();
   }
 
   async getDataList(collection: string) {
