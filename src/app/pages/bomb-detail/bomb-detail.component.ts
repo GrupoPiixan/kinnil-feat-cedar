@@ -57,6 +57,8 @@ export class BombDetailComponent implements OnInit {
   categorias: any = [];
   //  chartOptions: Highcharts.Options = { }
 
+  timeTimeout: number = 15000;
+
   // * Variables para grafica con zoom
   public primaryXAxis: any;
   public chartData: any[] = [];
@@ -88,8 +90,9 @@ export class BombDetailComponent implements OnInit {
   deshabilitarBotonStopS3: boolean = false;
   deshabilitarBotonStopC: boolean = false;
 
-
   socket: any;
+
+  mySetTimeout: any;
 
   constructor(private route: ActivatedRoute, private service: GetDataService, private datePipe: DatePipe) {
     const hoy = new Date();
@@ -111,34 +114,28 @@ export class BombDetailComponent implements OnInit {
           dataT.map(camion => {
             this.truck = camion.payload.doc.data();
             this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
-            this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.idBoard) + 1;
+            this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.board_id) + 1;
+            // ! HACER FUNCIONAR EL QUE SI ME LLEGA ALGO AL MOMENTO DE DARLE CLICK A UN BOTÓN, PUEDA TRABAJAR BIEN TODO
+            console.log(this.mySetTimeout);
+            
+            if (this.mySetTimeout !== undefined) {
+              clearTimeout(this.mySetTimeout);
+              this.mySetTimeout = undefined;
+              this.unlockButtons();
+            }
+            
+            this.lockButtons();
           });
         });
       });
     });
-
-
-    this.service.getTruckData(this.uid).subscribe(dataT => {
-
-      dataT.map(camion => {
-        this.truck = camion.payload.doc.data();
-        this.service.getData('quectel', this.uid).subscribe(dataSensor => {
-          dataSensor.map(sensor => {
-            this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
-            this.lockButtons()
-          });
-
-        });
-      })
-    });
-
-
     this.initSocketIO();
   }
 
   getTempBgColor() {
     return this.tablaSensores?.sensor?.a2 >= 0 ? 'bg-success' : this.tablaSensores > 30 ? 'bg-danger' : 'bg-danger';
   }
+
   getPressBgColor() {
     return this.tablaSensores?.sensor?.a1 >= 0 ? 'bg-warning' : this.tablaSensores >= 3 ? 'bg-success' : 'bg-danger';
   }
@@ -251,7 +248,7 @@ export class BombDetailComponent implements OnInit {
   }
 
   // * Methods to run or stop a belt and to open or close a silo
-  openSilo(silo: number){
+  openSilo(silo: number) {
     this.socket.emit('web_to_server', {
       board_id: this.uid,
       silo: silo,
@@ -260,9 +257,10 @@ export class BombDetailComponent implements OnInit {
 
     this.lockAllButtons();
 
-    setTimeout(() => {
+    this.mySetTimeout = setTimeout(() => {
       this.unlockButtons();
-    }, 15000);
+      this.lockButtons();
+    }, this.timeTimeout);
   }
 
   closedSilo(silo: number) {
@@ -274,13 +272,14 @@ export class BombDetailComponent implements OnInit {
 
     this.lockAllButtons();
 
-    setTimeout(() => {
+    this.mySetTimeout = setTimeout(() => {
       this.unlockButtons();
-    }, 15000);
+      this.lockButtons();
+    }, this.timeTimeout);
 
   }
 
-  stoppedBand(){
+  stoppedBand() {
     this.socket.emit('web_to_server', {
       board_id: this.uid,
       type: "write",
@@ -289,13 +288,13 @@ export class BombDetailComponent implements OnInit {
 
     this.lockAllButtons();
 
-    setTimeout(() => {
-      alert("Hola00");
+    this.mySetTimeout = setTimeout(() => {
       this.unlockButtons();
-    }, 15000);
+      this.lockButtons();
+    }, this.timeTimeout);
   }
 
-  runBand(){
+  runBand() {
     this.socket.emit('web_to_server', {
       board_id: this.uid,
       type: "write",
@@ -304,14 +303,14 @@ export class BombDetailComponent implements OnInit {
 
     this.lockAllButtons();
 
-    setTimeout(() => {
-      alert("Hola00");
+    this.mySetTimeout = setTimeout(() => {
       this.unlockButtons();
-    }, 15000);
+      this.lockButtons();
+    }, this.timeTimeout);
   }
 
   // * Locks all buttons when opening or closing a silo or running or stopping the conveyor
-  lockAllButtons(){
+  lockAllButtons() {
     this.deshabilitarBotonS1 = true;
     this.deshabilitarBotonS2 = true;
     this.deshabilitarBotonS3 = true;
@@ -325,44 +324,44 @@ export class BombDetailComponent implements OnInit {
   }
 
   // * Return the buttons to the original state
-  unlockButtons(){
-    if (this.tablaSensores.sensor.st_silo_1 == 'OPEN') {
-      this.deshabilitarBotonStopS1 = false;
-      this.deshabilitarBotonS1 = false;
-      this.deshabilitarBotonS2 = true;
-      this.deshabilitarBotonS3 = true;
-    }
-    if (this.tablaSensores.sensor.st_silo_2 == 'OPEN') {
-      this.deshabilitarBotonS1 = true;
-      this.deshabilitarBotonStopS2 = false;
-      this.deshabilitarBotonS2 = false;
-      this.deshabilitarBotonS3 = true;
-    }
-    if (this.tablaSensores.sensor.st_silo_3 == 'OPEN') {
-      this.deshabilitarBotonS1 = true;
-      this.deshabilitarBotonS2 = true;
-      this.deshabilitarBotonStopS3 = false;
-      this.deshabilitarBotonS3 = false;
-    }
-
-      this.deshabilitarBotonC = false;
-      this.deshabilitarBotonStopC = false;
+  unlockButtons() {
+    this.deshabilitarBotonStopS1 = false;
+    this.deshabilitarBotonStopS2 = false;
+    this.deshabilitarBotonStopS3 = false;
+    this.deshabilitarBotonS1 = false;
+    this.deshabilitarBotonS2 = false;
+    this.deshabilitarBotonS3 = false;
+    this.deshabilitarBotonC = false;
+    this.deshabilitarBotonStopC = false;
   }
 
   // * Blocks the buttons according to the status they have in the database
   lockButtons() {
-    console.log("tabla sensores lock", this.tablaSensores);
-    if (this.tablaSensores.sensor.st_silo_1 == 'OPEN') {
+    if (this.tablaSensores.sensor.st_silo_1 === 'OPEN') {
       this.deshabilitarBotonS2 = true;
       this.deshabilitarBotonS3 = true;
+      return;
+    } else if (this.tablaSensores.sensor.st_silo_1 === 'CLOSED') {
+      this.deshabilitarBotonS2 = false;
+      this.deshabilitarBotonS3 = false;
     }
-    if (this.tablaSensores.sensor.st_silo_2 == 'OPEN') {
+
+    if (this.tablaSensores.sensor.st_silo_2 === 'OPEN') {
       this.deshabilitarBotonS1 = true;
       this.deshabilitarBotonS3 = true;
+      return;
+    } else if (this.tablaSensores.sensor.st_silo_2 === 'CLOSED') {
+      this.deshabilitarBotonS1 = false;
+      this.deshabilitarBotonS3 = false;
     }
-    if (this.tablaSensores.sensor.st_silo_3 == 'OPEN') {
+
+    if (this.tablaSensores.sensor.st_silo_3 === 'OPEN') {
       this.deshabilitarBotonS1 = true;
       this.deshabilitarBotonS2 = true;
+      return;
+    } else if (this.tablaSensores.sensor.st_silo_3 === 'CLOSED') {
+      this.deshabilitarBotonS1 = false;
+      this.deshabilitarBotonS2 = false;
     }
   }
 }
