@@ -93,7 +93,7 @@ export class MachineDetailComponent implements OnInit {
         }
       });
     });
-    console.log("TODAS LAS BASES", this.allBases);
+
     this.service.getTrucksData().doc(this.uid).snapshotChanges().subscribe(dataT => {
       this.camion = dataT.payload.data();
       this.idsForm.get('idBoard1')?.setValue(this.camion.idBoards[0]);

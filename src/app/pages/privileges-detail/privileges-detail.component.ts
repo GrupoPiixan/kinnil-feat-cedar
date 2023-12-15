@@ -59,8 +59,6 @@ export class PrivilegesDetailComponent implements OnInit {
 
   // * Metodo para iniciar modal de edición de usuario con su rol
   editRoleUser(menu: any): void {
-    console.log(menu);
-    
     this.menu = menu;
     this.privilege = menu.privileges;
   }

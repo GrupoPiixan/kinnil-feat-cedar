@@ -1,6 +1,6 @@
 {
   "name": "kinill-cm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "ng": "ng",
     "start": "ng serve -o --proxy-config proxy.conf.json",
@@ -19,7 +19,6 @@
     "@angular/platform-browser": "~13.0.0",
     "@angular/platform-browser-dynamic": "~13.0.0",
     "@angular/router": "~13.0.0",
-    "@sheet/chart": "^1.20220921.1",
     "echarts": "^5.3.1",
     "firebase": "^9.4.0",
     "ngx-echarts": "^8.0.1",

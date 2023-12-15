@@ -8,11 +8,11 @@ import { environment } from '../../../environments/environment';
 // * Service
 import { GetDataService } from 'src/app/services/get-data.service';
 
-// * Variable for SheetJS
-import * as XLSX from '@sheet/chart';
-
 // * Declaramos la variable para tener acceso a la libreria de socketIO
 declare const io: any;
+
+// * Variable for SheetJS
+declare const XLSX: any;
 
 @Component({
   selector: 'app-bomb-detail',
@@ -106,7 +106,6 @@ export class BombDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.uid = this.route.snapshot.paramMap.get("uid") || '';
-    console.log("ID", this.uid);
 
     this.service.getData('quectel', this.uid).subscribe(dataSensor => {
       dataSensor.map(sensor => {
@@ -115,8 +114,6 @@ export class BombDetailComponent implements OnInit {
             this.truck = camion.payload.doc.data();
             this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
             this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.board_id) + 1;
-            // ! HACER FUNCIONAR EL QUE SI ME LLEGA ALGO AL MOMENTO DE DARLE CLICK A UN BOTÓN, PUEDA TRABAJAR BIEN TODO
-            console.log(this.mySetTimeout);
             
             if (this.mySetTimeout !== undefined) {
               clearTimeout(this.mySetTimeout);

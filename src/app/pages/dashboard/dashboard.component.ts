@@ -97,8 +97,6 @@ export class DashboardComponent implements OnInit {
         this.contDeviceNotActive = 0;
         
         for (let i = 0; i < camionn.idBoards.length; i++) {
-          console.log(camionn.idBoards[i]);
-          
           this.tableFill(camionn, camionn.idBoards[i]);
         }
       });
@@ -112,8 +110,6 @@ export class DashboardComponent implements OnInit {
   }
 
   detalle(data: any) {
-    console.log(data);
-    
     this.router.navigate(['/bomb-detail/' + data.idsensor]);
   }
 

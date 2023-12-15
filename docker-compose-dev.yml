@@ -5,6 +5,26 @@ version: '3.9'
 services:
 
   #* Service name
+  server:
+    #* Image to use
+    image: node:18.15.0
+    init: true
+    #* Directory where you will work
+    working_dir: /home/dev
+    #* Container name
+    container_name: kinnil-cedar-server
+    command: sh -c "npm i -g nodemon && npm i && npm run start:sync"
+    #* Port exhibition
+    ports:
+      - 8080:8080
+      - 3006:3006
+      - 3005:3005
+    #* Volume where information persists
+    volumes:
+      - ./server:/home/dev
+    restart: unless-stopped
+
+  #* Service name
   front:
     #* Image to use
     image: node:14.17.5
