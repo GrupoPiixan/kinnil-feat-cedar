@@ -249,7 +249,8 @@ export class BombDetailComponent implements OnInit {
     this.socket.emit('web_to_server', {
       board_id: this.uid,
       silo: silo,
-      value: "OPEN"
+      value: "OPEN",
+      type: "write"
     });
 
     this.lockAllButtons();
@@ -264,7 +265,8 @@ export class BombDetailComponent implements OnInit {
     this.socket.emit('web_to_server', {
       board_id: this.uid,
       silo: silo,
-      value: "CLOSE"
+      value: "CLOSE",
+      type: "write",
     });
 
     this.lockAllButtons();
