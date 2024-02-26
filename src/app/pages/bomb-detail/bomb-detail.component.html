@@ -46,7 +46,7 @@
             <div class="container">
               <div class="row">
                 <div class="col-6">
-                  <h4 class="font-bold">Ultima conexión:
+                  <h4 class="font-bold">Última conexión:
                     {{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}</h4>
                   <div class="row mb-1">
                     <div class="col-3">Silo 1</div>
@@ -112,11 +112,12 @@
                       [(ngModel)]="sliderValue" (ngModelChange)="onInputChange($event)">
                     <div class="contain">
                       <div class="row">
-                        <div class="col-6 pt-3">
-                          <p>Porcentaje de apertura: <span id="demo">{{ sliderValue }}</span></p>
+                        <div class="col-7 pt-3">
+                          <p>Porcentaje de apertura: <span id="demo">{{ sliderValue }}%</span></p>
                         </div>
-                        <div class="col-6 pt-1">
-                          <button id="updatePercentage" class="btn btn-success d-none" (click)="updatePercentage()">Actualizar</button>
+                        <div class="col-5 pt-1">
+                          <button id="updatePercentage" class="btn btn-success d-none" data-toggle="modal"
+                          data-target="#modalUpdate">Actualizar</button>
                         </div>
                       </div>
                     </div>
@@ -199,6 +200,30 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="modalUpdate" data-backdrop="static" data-keyboard="false" tabindex="-1"
+  aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container">
+          <div class="row">
+            <div class="col-12" style="text-align: center !important;">
+              <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
+            </div>
+            <div class="col-12" style="padding-left:0%; padding-right: 0%;">
+              <h5>¿Seguro de actualizar el porcentaje de apertura al {{sliderValue}}%?</h5>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="no-border center-btn mb-3">
+        <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-success ml-4" (click)="updatePercentage()">Si, actualizar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
   <div class="modal fade" id="generateReportModal" data-backdrop="static" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">

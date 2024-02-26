@@ -14,6 +14,9 @@ declare const io: any;
 // * Variable for SheetJS
 declare const XLSX: any;
 
+// * Jquery
+declare var $: any;
+
 @Component({
   selector: 'app-bomb-detail',
   templateUrl: './bomb-detail.component.html',
@@ -126,7 +129,8 @@ export class BombDetailComponent implements OnInit {
             }
             this.selectSlider();
             this.lockButtons();
-            document.getElementById('updatePercentage')!.classList.remove('d-none');
+            console.log("DATA COMPLETO", this.tablaSensores);
+            
           });
         });
       });
@@ -135,9 +139,25 @@ export class BombDetailComponent implements OnInit {
   }
 
   selectSlider(){
-    this.tablaSensores.sensor.st_s1 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s1 : '';
-    this.tablaSensores.sensor.st_s2 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s2 : '';
-    this.tablaSensores.sensor.st_s3 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s3 : '';
+    if (this.tablaSensores.sensor.st_s1 === 'OPEN' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
+      this.sliderValue = this.tablaSensores.sensor.p_s1;
+      document.getElementById('updatePercentage')!.classList.remove('d-none');
+    }
+
+    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'OPEN' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
+      this.sliderValue = this.tablaSensores.sensor.p_s2;
+      document.getElementById('updatePercentage')!.classList.remove('d-none');
+    }
+
+    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'OPEN') {
+      this.sliderValue = this.tablaSensores.sensor.p_s3;
+      document.getElementById('updatePercentage')!.classList.remove('d-none');
+    }
+
+    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
+      this.sliderValue = 0;
+      document.getElementById('updatePercentage')!.classList.add('d-none');
+    }
   }
 
   openAlertConfirm(silo: number){
@@ -271,29 +291,36 @@ export class BombDetailComponent implements OnInit {
 
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
-    this.socket.emit('web_to_server', {
-      id: this.uid,
-      type: "write",
-      silo_pos: silo,
-      value: this.sliderValue
-    });
-
-    this.lockAllButtons();
-
-    this.mySetTimeout = setTimeout(() => {
-      this.unlockButtons();
-      this.lockButtons();
-    }, this.timeTimeout);
-
-    document.getElementById('updatePercentage')!.classList.remove('d-none');
+    if(this.sliderValue !== 0){
+      this.socket.emit('web_to_server', {
+        id: this.uid,
+        type: "write",
+        silo_pos: silo,
+        value: this.sliderValue
+      });
+  
+      this.lockAllButtons();
+  
+      this.mySetTimeout = setTimeout(() => {
+        this.unlockButtons();
+        this.lockButtons();
+      }, this.timeTimeout);
+  
+      this.selectSlider();
+  
+      // document.getElementById('updatePercentage')!.classList.remove('d-none');
+      $('#modalAlert').modal('hide')
+    }else{
+      alert("El porcentaje de apertura debe de ser mayor a cero");
+    }
   }
 
   closedSilo(silo: number) {
     this.socket.emit('web_to_server', {
-      board_id: this.uid,
-      silo: silo,
-      value: "CLOSE",
+      id: this.uid,
       type: "write",
+      "silo_pos": silo,
+      value: 0,
     });
 
     this.lockAllButtons();
@@ -394,15 +421,12 @@ export class BombDetailComponent implements OnInit {
   updatePercentage(){
     let numberSilo;
     this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13=== 'OPEN' ? numberSilo = 3 : '';
-   
-    console.log("NUMBER SILO ACTUALZIAR", numberSilo);
-    console.log("SLIDER ACTUALZIAR", this.sliderValue);
     
-    // this.socket.emit('web_to_server', {
-    //   id: this.uid,
-    //   type: "write",
-    //   silo_pos: numberSilo,
-    //   value: this.sliderValue
-    // });
+    this.socket.emit('web_to_server', {
+      id: this.uid,
+      type: "write",
+      silo_pos: numberSilo,
+      value: this.sliderValue
+    });
   }
 }
