@@ -9,7 +9,6 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-4">
-              <!-- <img src="/assets/img/fevid.png" alt="FEVID" style="width: 55%; padding-left: 6%;"> -->
             </div>
             <div class="col-sm-4" style="text-align-last: center;">
               <title class="ng-binding">Locación </title>
@@ -29,166 +28,129 @@
         <div class="row p-3">
           <div class="col-6 ">
             <div class="small-box  bg-info">
-              <div class="row inner pl-4">
-                <table>
-                  <tr>
-                    <td class="h6 font-weight-bold"> ID: </td>
-                    <td class="px-3 ng-binding"> {{tablaSensores.sensor?.id}} </td>
-                    <td class="h6 font-weight-bold"> Nombre del equipo:</td>
-                    <td class="px-3 ng-binding">{{truck.Nombre}} </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold"> Estatus de equipo: </td>
-                    <td class="px-3 ng-binding">{{tablaSensores.sensor?.estatus}} </td>
-                    <td class="h6 font-weight-bold"> Última hora de reporte:</td>
-                    <td class="px-3 ng-binding">{{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold"> Set point presión:</td>
-                    <td class="px-3 ng-binding"> {{truck.pSPoint}} psi </td>
-                    <td class="h6 font-weight-bold"> Set point temperatura:</td>
-                    <td class="px-3 ng-binding"> {{truck.tSPoint}} C° </td>
-                  </tr>
-                  <!-- <tr>
-                          <td class="h6"> Alarma</td>
-                          <td class="px-3 ng-binding"> </td>
-                          <td class="h6"> Estatus de conexión</td>
-                        </tr> -->
-                </table>
+              <div class="container p-2">
+                <div class="row inner pl-2">
+                  <div class="col-6 font-weight-bold">ID: {{tablaSensores.sensor?.id}}</div>
+                  <div class="col-6 font-weight-bold">Nombre del equipo: {{truck.Nombre}}</div>
+                </div>
+                <div class="row inner pl-2">
+                  <div class="col-6 font-weight-bold">Estatus de equipo: {{tablaSensores.sensor?.plc_st}}</div>
+                  <div class="col-6 font-weight-bold">Última hora de reporte:
+                    {{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}</div>
+                </div>
               </div>
               <div class="icon">
               </div>
             </div>
-            <div class="row">
-              <div class="col-12">
-                <h4>Generar reporte de registros de la base: {{ tablaSensores.sensor?.idBoard }}</h4>
-                <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
-                  <div class="row">
-                    <div class="col-12 col-lg-6">
-                      <label for="initDate">Fecha de inicio</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="initDate"
-                        formControlName="initDate">
+            <!--Reporte-->
+            <div class="container">
+              <div class="row">
+                <div class="col-6">
+                  <h4 class="font-bold">Ultima conexión:
+                    {{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}</h4>
+                  <div class="row mb-1">
+                    <div class="col-3">Silo 1</div>
+                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s1}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'CLOSED'">
+                      <!-- <button id="playS1" class="btn btn-success btn-circle" (click)="openSilo(1)"
+                        [disabled]="deshabilitarBotonS1"><i class="fas fa-play"></i></button> -->
+                      <button id="playS1" class="btn btn-success btn-circle" data-toggle="modal"
+                        data-target="#modalAlert" [disabled]="deshabilitarBotonS1"><i class="fas fa-play"
+                          (click)="openAlertConfirm(1)"></i></button>
                     </div>
-                    <div class="col-12 col-lg-6">
-                      <label for="finishDate">Fecha de termino</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="finishDate"
-                        formControlName="finishDate">
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'OPEN'">
+                      <button id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)"
+                        [disabled]="deshabilitarBotonStopS1"><i class="fas fa-stop"></i></button>
                     </div>
                   </div>
-                  <div class="row pt-2">
-                    <div class="col-12 text-center">
-                      <button class="btn btn-primary" type="submit">Generar reporte</button>
+                  <div class="row mb-1">
+                    <div class="col-3">Silo 2</div>
+                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s2}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'CLOSED'">
+                      <!-- <button id="playS2" class="btn btn-success btn-circle" (click)="openSilo(2)"
+                        [disabled]="deshabilitarBotonS2"><i class="fas fa-play"></i></button> -->
+                      <button id="playS2" class="btn btn-success btn-circle" data-toggle="modal"
+                        data-target="#modalAlert" [disabled]="deshabilitarBotonS2"><i class="fas fa-play"
+                          (click)="openAlertConfirm(2)"></i></button>
+                    </div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'OPEN'">
+                      <button id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)"
+                        [disabled]="deshabilitarBotonStopS2"><i class="fas fa-stop"></i></button>
                     </div>
                   </div>
-                </form>
+                  <div class="row mb-1">
+                    <div class="col-3">Silo 3</div>
+                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s3}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'CLOSED'">
+                      <!-- <button id="playS3" class="btn btn-success btn-circle" (click)="openSilo(3)"
+                        [disabled]="deshabilitarBotonS3"><i class="fas fa-play"></i></button> -->
+                      <button id="playS3" class="btn btn-success btn-circle" data-toggle="modal"
+                        data-target="#modalAlert" [disabled]="deshabilitarBotonS3"><i class="fas fa-play"
+                          (click)="openAlertConfirm(3)"></i></button>
+                    </div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'OPEN'">
+                      <button id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)"
+                        [disabled]="deshabilitarBotonStopS3"><i class="fas fa-stop"></i></button>
+                    </div>
+                  </div>
+                  <div class="row mb-1">
+                    <div class="col-3">Conveyor</div>
+                    <div class="col-6">Estatus: {{tablaSensores.sensor?.bands}}</div>
+                    <div class="co-3 pl-2" *ngIf="tablaSensores.sensor?.bands == 'STOPPED'">
+                      <button class="btn btn-success btn-circle" (click)="runBand()" [disabled]="deshabilitarBotonC"><i
+                          class="fas fa-play"></i></button>
+                    </div>
+                    <div class="col-3 pl-2" *ngIf="tablaSensores.sensor?.bands == 'RUNNING'">
+                      <button class="btn btn-danger-circle btn-danger" (click)="stoppedBand()"
+                        [disabled]="deshabilitarBotonStopC"><i class="fas fa-stop"></i></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 pb-5 pt-5">
+                  <div class="slidecontainer mt-3">
+                    <input type="range" min="0" max="100" value="50" class="slider" id="myRange"
+                      [(ngModel)]="sliderValue" (ngModelChange)="onInputChange($event)">
+                    <div class="contain">
+                      <div class="row">
+                        <div class="col-6 pt-3">
+                          <p>Porcentaje de apertura: <span id="demo">{{ sliderValue }}</span></p>
+                        </div>
+                        <div class="col-6 pt-1">
+                          <button id="updatePercentage" class="btn btn-success d-none" (click)="updatePercentage()">Actualizar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-6">
             <div class="row">
-              <div class="col-12 col-lg-6">
-                <div class="small-box" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
+              <div class="col-12 col-lg-4">
+                <div class="small-box p-2" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> FT/SEC: {{tablaSensores.sensor?.bands_ftmin| number: '1.1-2'}} </h4>
+                    FT/SEC: {{tablaSensores.sensor?.ftmin| number: '1.1-2'}}
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-lg-6">
-                <div class="small-box" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
+              <div class="col-12 col-lg-4">
+                <div class="small-box p-1" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
                   <div class="inner">
-                    <h4> RPM: {{tablaSensores.sensor?.bands_rpm| number: '1.1-2'}} </h4>
+                    RPM: {{tablaSensores.sensor?.rpm| number: '1.1-2'}}
                   </div>
                   <h4></h4>
                 </div>
               </div>
-            </div>
-            <div class="row">
-              <div class="col-6">
-                <h3 class="font-bold">Ultima conexión:</h3>
+              <div class="col-12 col-lg-4 pointer" id="generateReportBotton">
+                <!-- <button class="btn btn-primary col-lg-12" data-toggle="modal" data-target="#generateReportModal">Generar reporte</button> -->
+                <div class="p-3 bg-primary border-radius" data-toggle="modal" data-target="#generateReportModal"
+                  style="text-align: center;">
+                  Generar reporte
+                </div>
               </div>
-              <div class="col-6">
-                <h4 class="font-bold">14-02-2023</h4>
-              </div>
             </div>
-            <div class="row mt-4 p-4 col-12 col-lg-6">
-              <div class="col-6">
-                <table>
-                  <tr>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Silo 1</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Estatus:</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h4> {{tablaSensores.sensor?.st_silo_1}}</h4>
-                    </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_1 == 'CLOSED'"> <button
-                        id="playS1" class="btn btn-success btn-circle"  (click)="openSilo(1)" [disabled]="deshabilitarBotonS1" ><i
-                          class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_1 == 'OPEN'"> <button
-                        id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)" [disabled]="deshabilitarBotonStopS1"><i class="fas fa-stop"></i></button> </td>
 
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Silo 2</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Estatus:</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h4> {{tablaSensores.sensor?.st_silo_2}}</h4>
-                    </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_2 == 'CLOSED'"> <button
-                        id="playS2" class="btn btn-success btn-circle"  (click)="openSilo(2)" [disabled]="deshabilitarBotonS2" ><i
-                          class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_2 == 'OPEN'"> <button
-                        id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)" [disabled]="deshabilitarBotonStopS2"><i class="fas fa-stop"></i></button> </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Silo 3</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Estatus:</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h4> {{tablaSensores.sensor?.st_silo_3}}</h4>
-                    </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_3 == 'CLOSED'"> <button
-                        id="playS3" class="btn btn-success btn-circle" (click)="openSilo(3)" [disabled]="deshabilitarBotonS3"><i
-                          class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_silo_3 == 'OPEN'"> <button
-                        id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)" [disabled]="deshabilitarBotonStopS3"><i class="fas fa-stop"></i></button> </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Conveyor</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h3 class="font-bold">Estatus:</h3>
-                    </td>
-                    <td class="h6 font-weight-bold">
-                      <h4> {{tablaSensores.sensor?.st_bands}} </h4>
-                    </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_bands == 'STOPPED'"> <button
-                        class="btn btn-success btn-circle" (click)="runBand()" [disabled]="deshabilitarBotonC"><i class="fas fa-play"></i></button> </td>
-                    <td class="px-3 ng-binding pb-2" *ngIf="tablaSensores.sensor?.st_bands == 'RUNNING'"> <button
-                        class="btn btn-danger-circle btn-danger" (click)="stoppedBand()" [disabled]="deshabilitarBotonStopC"><i class="fas fa-stop"></i></button> </td>
-                  </tr>
-                </table>
-              </div>
-              <div class="col-6">
-                <table>
-                  <!-- <tr>
-                    <td class="h6 font-weight-bold"><h3 class="font-bold">¿En línea?</h3></td>
-                    <td class="h6 font-weight-bold"><h4> Sí</h4></td>
-                  </tr> -->
-                </table>
-              </div>
-            </div>
           </div>
         </div>
         <div class="col-lg-12">
@@ -211,6 +173,82 @@
           </div> <!-- /.card -->
         </div><!-- /.col -->
       </section><!-- /.content -->
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalAlert" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-12" style="text-align: center !important;">
+                <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
+              </div>
+              <div class="col-12" style="padding-left:20%; padding-right: 20%;">
+                <h5>¿Seguro de abrir el silo {{numberSilo}} al {{sliderValue}}%?</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="no-border center-btn mb-3">
+          <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success ml-4" (click)="openSilo(numberSilo)">Si, abrir silo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="generateReportModal" data-backdrop="static" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Generar reporte de la tablilla: {{ tablaSensores.sensor?.id }}
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12" id="fornDownloadReport">
+              <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+                <div class="row">
+                  <div class="col-12 col-lg-6">
+                    <label for="initDate">Fecha de inicio</label>
+                    <input type="date" class="p-invalid input-group-append form-control" id="initDate"
+                      formControlName="initDate">
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <label for="finishDate">Fecha de termino</label>
+                    <input type="date" class="p-invalid input-group-append form-control" id="finishDate"
+                      formControlName="finishDate">
+                  </div>
+                </div>
+                <div class="row pt-2">
+                  <div class="col-12 text-center">
+                  </div>
+                </div>
+                <div class="modal-footer mt-4">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button class="btn btn-primary" type="submit">Generar reporte</button>
+                </div>
+              </form>
+            </div>
+            <div id="contenedor" class="col-12 d-none">
+              <div class="contenedor-loader">
+                <div class="loader1"></div>
+                <div class="loader2"></div>
+                <div class="loader3"></div>
+                <div class="loader4"></div>
+              </div>
+              <div class="cargando">Descargando reporte...</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <app-footer></app-footer>

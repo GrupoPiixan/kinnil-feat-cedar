@@ -144,20 +144,21 @@ export class GraphComponent implements OnInit {
     this.service.getDataChart('quectel', idBomb?.toString() || '').subscribe(data => {
       data.forEach(item => {
         let temp: any = item.data()
+        
         this.now = new Date(temp.creacionRegistro.seconds * 1000)
 
         let datoPresion = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.bands_rpm
+            temp.rpm
           ]
         };
         let datoTemperatura = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.bands_ftmin
+            temp.ftmin
           ]
         };
         this.preison.push(datoPresion);
@@ -172,20 +173,22 @@ export class GraphComponent implements OnInit {
     this.service.getData('quectel', bomb?.toString() || '').subscribe(data => {
       data.map(item => {
         let temp: any = item.payload.doc.data();
+        console.log("AAAAAAAAA", temp);
+
         this.now = new Date(temp.creacionRegistro.seconds * 1000)
   
         let datoPresion = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.r_RPM
+            temp.rpm
           ]
         };
         let datoTemperatura = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.r_ftMin
+            temp.ftmin
           ]
         };
         this.preison.unshift(datoPresion)

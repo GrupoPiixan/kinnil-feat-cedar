@@ -55,6 +55,18 @@ export class DashboardComponent implements OnInit {
     }, {
       text: 'Alerta mantenimento banda, horas cumplidas',
       show: true
+    }, {
+      text: 'Alerma del RPM',
+      show: true
+    }, {
+      text: 'Posición Silo 1',
+      show: true
+    }, {
+      text: 'Posición Silo 2',
+      show: true
+    }, {
+      text: 'Posición Silo 3',
+      show: true
     }],
     buttons: {
       detail: {
@@ -141,22 +153,26 @@ export class DashboardComponent implements OnInit {
       this.contDevicePause = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'En Pausa').length;
       this.contDeviceInactive = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'Inactivo').length;
       this.contDeviceOff = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'Apagado').length;
-
+      console.log("DATA TABLE", this.tablaSensores);
+      
       // * Llenamos la tabla con los datos
       this.tablaSensores.forEach((data: any) => {
         this.dataRows.push([
-          data.sensor.board_id,
+          data.sensor.id,
           data.camion.Nombre,
-          data.sensor.bands_ftmin,
-          data.sensor.bands_rpm,
-          data.sensor.st_silo_1,
-          data.sensor.st_silo_2,
-          data.sensor.st_silo_3,
-          data.sensor.st_bands,
-          data.sensor.maintenance
+          data.sensor.ftmin,
+          data.sensor.rpm,
+          data.sensor.st_s1,
+          data.sensor.st_s2,
+          data.sensor.st_s3,
+          data.sensor.bands,
+          data.sensor.mtto,
+          data.sensor.al_1,
+          data.sensor.p_s1,
+          data.sensor.p_s2,
+          data.sensor.p_s3,
         ]);
       });
-
 
       // * Mostramos el mapa y tabla de sensores
       this.showComponents = true;

@@ -6,12 +6,125 @@
         text-rendering: auto;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
-      content: "\f068";
-      transform: rotate(0deg) ;
-      transition: all linear 0.25s;
-      
-      float: right;
-      }   
-    .collapsed>.card-tools:after {
-            content: "\f067";
-    }
+        content: "\f068";
+        transform: rotate(0deg);
+        transition: all linear 0.25s;
+
+        float: right;
+}
+
+.collapsed>.card-tools:after {
+        content: "\f067";
+}
+
+@import url('//fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,900&display=swap');
+
+body {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+}
+
+#contenedor {
+        background-color: #343A40;
+        display: grid;
+        place-content: center;
+        height: 15vh;
+        color: #000;
+}
+
+.cargando {
+        position: relative;
+        color: #FFF;
+        margin-top: 2em;
+        letter-spacing: 0.08em;
+        text-transform: uppercase
+}
+
+.contenedor-loader {
+        width: 180px;
+        height: 30px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin: 0 auto;
+}
+
+.contenedor-loader div {
+        width: 30px;
+        height: 30px;
+        background-color: #FFF;
+        animation: salto 1s alternate infinite;
+}
+
+.contenedor-loader div:nth-child(2) {
+        animation-delay: 0.20s;
+}
+
+.contenedor-loader div:nth-child(3) {
+        animation-delay: 0.40s;
+}
+
+.contenedor-loader div:nth-child(4) {
+        animation-delay: 0.60s;
+}
+
+@keyframes salto {
+        from {
+                opacity: 1;
+        }
+
+        to {
+                opacity: 0;
+        }
+}
+
+.pointer {
+        cursor: pointer;
+}
+
+.border-radius {
+        border-radius: 5px;
+}
+
+.slidecontainer {
+        width: 100%;
+}
+
+.slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 15px;
+        border-radius: 10px;
+        background: #ffffff;
+        outline: none;
+        opacity: 0.7;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+}
+
+.slider:hover {
+        opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #00BC8C;
+        cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: #00BC8C;
+        cursor: pointer;
+}
+
+ .no-border{
+        border: none;
+ }

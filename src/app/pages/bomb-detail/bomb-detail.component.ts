@@ -20,7 +20,12 @@ declare const XLSX: any;
   styleUrls: ['./bomb-detail.component.css']
 })
 export class BombDetailComponent implements OnInit {
+  sliderValue: number = 0;
+  numberSilo: number = 0;
 
+  onInputChange(event: any) {
+    this.sliderValue = event.target.value;
+  }
   // * Formulario de reporte
   reportForm = new FormGroup({
     initDate: new FormControl('', [Validators.required]),
@@ -113,20 +118,30 @@ export class BombDetailComponent implements OnInit {
           dataT.map(camion => {
             this.truck = camion.payload.doc.data();
             this.tablaSensores = { docIdSensor: sensor.payload.doc.id, sensor: sensor.payload.doc.data(), camion: this.truck };
-            this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.board_id) + 1;
-            
+            this.baseNumber = this.truck.idBoards.indexOf(this.tablaSensores.sensor.id) + 1;
             if (this.mySetTimeout !== undefined) {
               clearTimeout(this.mySetTimeout);
               this.mySetTimeout = undefined;
               this.unlockButtons();
             }
-            
+            this.selectSlider();
             this.lockButtons();
+            document.getElementById('updatePercentage')!.classList.remove('d-none');
           });
         });
       });
     });
     this.initSocketIO();
+  }
+
+  selectSlider(){
+    this.tablaSensores.sensor.st_s1 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s1 : '';
+    this.tablaSensores.sensor.st_s2 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s2 : '';
+    this.tablaSensores.sensor.st_s3 === 'OPEN' ? this.sliderValue = this.tablaSensores.sensor.p_s3 : '';
+  }
+
+  openAlertConfirm(silo: number){
+    this.numberSilo = silo;
   }
 
   getTempBgColor() {
@@ -143,77 +158,87 @@ export class BombDetailComponent implements OnInit {
   }
 
   async generateReport() {
-    let tbody = [[]];
-    const reportHeader =
-      [
-        [null],
-        [null],
-        [null, `Fecha Inicio: ${this.reportForm.value.initDate}`, null, `Fecha Final: ${this.reportForm.value.finishDate}`],
-        [null],
-        [null],
-        ['Registro', 'Día', 'Hora', 'RPM', 'FT/SEC', 'Indicador silo 1 abierto en modo manual', 'Indicador silo 2 abierto en modo manual', 'Indicador silo 3 abierto en modo manual',
-          'Indicador bandas encendidas', 'Alerta mantenimento banda, horas cumplidas']
-      ];
-
-    const respReport = await this.service.generateReport(this.reportForm.value.initDate, this.reportForm.value.finishDate);
-    respReport.forEach(dataReport => {
-      for (let i = 0; i < dataReport.docs.length; i++) {
-        const element = dataReport.docs[i].data() as {
-          bands_rpm: string,
-          bands_ftmin: string,
-          st_silo_1: string,
-          st_silo_2: string,
-          st_silo_3: string,
-          st_bands: string,
-          maintenance: string
-          creacionRegistro: {
-            nanoseconds: number,
-            seconds: number
-          }
-        };
-
-        const date = new Date(element.creacionRegistro.seconds * 1000);
-
-        const data = [
-          `${date.getFullYear()}/${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()} ${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
-          `${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()}/${date.getFullYear()}`,
-          `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
-          element.bands_rpm.toString(),
-          element.bands_ftmin.toString(),
-          element.st_silo_1.toString(),
-          element.st_silo_2.toString(),
-          element.st_silo_3.toString(),
-          element.st_bands.toString(),
-          element.maintenance.toString()
+    if(this.reportForm.valid){
+      document.getElementById('fornDownloadReport')!.classList.add('d-none');
+      document.getElementById('contenedor')!.classList.remove('d-none');
+      let tbody = [[]];
+      const reportHeader =
+        [
+          [null],
+          [null],
+          [null, `Fecha Inicio: ${this.reportForm.value.initDate}`, null, `Fecha Final: ${this.reportForm.value.finishDate}`],
+          [null],
+          [null],
+          ['Registro', 'Día', 'Hora', 'RPM', 'FT/SEC', 'Indicador silo 1 abierto en modo manual', 'Indicador silo 2 abierto en modo manual', 'Indicador silo 3 abierto en modo manual',
+            'Indicador bandas encendidas', 'Alerta mantenimento banda, horas cumplidas']
         ];
-
-        tbody.push(data as [])
-      }
-
-      var wb = XLSX.utils.book_new();
-      var ws = XLSX.utils.aoa_to_sheet([[]]);
-
-      XLSX.utils.book_append_sheet(wb, ws, "KinnilCM-ReporteBase");
-      XLSX.utils.sheet_add_aoa(ws, reportHeader, { origin: "A1" });
-      XLSX.utils.sheet_add_aoa(ws, tbody, { origin: "A6" });
-
-      /*if (!ws["!images"]) ws["!images"] = [];
-      ws["!images"].push({
-        "!link": "http://sheetjs.com/logo.png",
-        '!pos': { x: 700, y: 300, w: 64, h: 64 },
-        "!datatype": "remote"
-      });*/
-
-      if (!ws['!cols']) ws['!cols'] = [];
-      ws['!cols'][0] = { width: 20 };
-      ws['!cols'][1] = { width: 20 };
-      ws['!cols'][2] = { width: 20 };
-      ws['!cols'][3] = { width: 20 };
-      ws['!cols'][4] = { width: 20 };
-      ws['!cols'][5] = { width: 20 };
-
-      XLSX.writeFile(wb, "KinnilCM-ReporteBase.xlsx", { bookSST: true, cellStyles: true, bookImages: true });
-    });
+  
+      const respReport = await this.service.generateReport(this.reportForm.value.initDate, this.reportForm.value.finishDate);
+      respReport.forEach(dataReport => {
+        for (let i = 0; i < dataReport.docs.length; i++) {
+          const element = dataReport.docs[i].data() as {
+            rpm: string,
+            ftmin: string,
+            st_s1: string,
+            st_s2: string,
+            st_s3: string,
+            bands: string,
+            mtto: string
+            creacionRegistro: {
+              nanoseconds: number,
+              seconds: number
+            }
+          };
+  
+          const date = new Date(element.creacionRegistro.seconds * 1000);
+  
+          const data = [
+            `${date.getFullYear()}/${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()} ${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
+            `${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()}/${date.getFullYear()}`,
+            `${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
+            element.rpm.toString(),
+            element.ftmin.toString(),
+            element.st_s1.toString(),
+            element.st_s2.toString(),
+            element.st_s3.toString(),
+            element.bands.toString(),
+            element.mtto.toString()
+          ];
+  
+          tbody.push(data as [])
+        }
+  
+        var wb = XLSX.utils.book_new();
+        var ws = XLSX.utils.aoa_to_sheet([[]]);
+  
+        XLSX.utils.book_append_sheet(wb, ws, "KinnilCM-ReporteBase");
+        XLSX.utils.sheet_add_aoa(ws, reportHeader, { origin: "A1" });
+        XLSX.utils.sheet_add_aoa(ws, tbody, { origin: "A6" });
+  
+        /*if (!ws["!images"]) ws["!images"] = [];
+        ws["!images"].push({
+          "!link": "http://sheetjs.com/logo.png",
+          '!pos': { x: 700, y: 300, w: 64, h: 64 },
+          "!datatype": "remote"
+        });*/
+  
+        if (!ws['!cols']) ws['!cols'] = [];
+        ws['!cols'][0] = { width: 20 };
+        ws['!cols'][1] = { width: 20 };
+        ws['!cols'][2] = { width: 20 };
+        ws['!cols'][3] = { width: 20 };
+        ws['!cols'][4] = { width: 20 };
+        ws['!cols'][5] = { width: 20 };
+  
+        XLSX.writeFile(wb, "KinnilCM-ReporteBase.xlsx", { bookSST: true, cellStyles: true, bookImages: true });
+        document.getElementById('fornDownloadReport')!.classList.remove('d-none');
+        document.getElementById('contenedor')!.classList.add('d-none');
+      });
+    
+    }else{
+      alert("Debes de seleccionar un rango de fechas para poder consultar el reporte");
+    }
+    
   }
 
   initSocketIO() {
@@ -247,10 +272,10 @@ export class BombDetailComponent implements OnInit {
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
     this.socket.emit('web_to_server', {
-      board_id: this.uid,
-      silo: silo,
-      value: "OPEN",
-      type: "write"
+      id: this.uid,
+      type: "write",
+      silo_pos: silo,
+      value: this.sliderValue
     });
 
     this.lockAllButtons();
@@ -259,6 +284,8 @@ export class BombDetailComponent implements OnInit {
       this.unlockButtons();
       this.lockButtons();
     }, this.timeTimeout);
+
+    document.getElementById('updatePercentage')!.classList.remove('d-none');
   }
 
   closedSilo(silo: number) {
@@ -283,7 +310,7 @@ export class BombDetailComponent implements OnInit {
       board_id: this.uid,
       type: "write",
       bands: "stop"
-    });
+    }); 
 
     this.lockAllButtons();
 
@@ -336,31 +363,46 @@ export class BombDetailComponent implements OnInit {
 
   // * Blocks the buttons according to the status they have in the database
   lockButtons() {
-    if (this.tablaSensores.sensor.st_silo_1 === 'OPEN') {
+    if (this.tablaSensores.sensor.st_s1 === 'OPEN') {
       this.deshabilitarBotonS2 = true;
       this.deshabilitarBotonS3 = true;
       return;
-    } else if (this.tablaSensores.sensor.st_silo_1 === 'CLOSED') {
+    } else if (this.tablaSensores.sensor.st_s1 === 'CLOSED') {
       this.deshabilitarBotonS2 = false;
       this.deshabilitarBotonS3 = false;
     }
 
-    if (this.tablaSensores.sensor.st_silo_2 === 'OPEN') {
+    if (this.tablaSensores.sensor.st_s2 === 'OPEN') {
       this.deshabilitarBotonS1 = true;
       this.deshabilitarBotonS3 = true;
       return;
-    } else if (this.tablaSensores.sensor.st_silo_2 === 'CLOSED') {
+    } else if (this.tablaSensores.sensor.st_s2 === 'CLOSED') {
       this.deshabilitarBotonS1 = false;
       this.deshabilitarBotonS3 = false;
     }
 
-    if (this.tablaSensores.sensor.st_silo_3 === 'OPEN') {
+    if (this.tablaSensores.sensor.st_s3 === 'OPEN') {
       this.deshabilitarBotonS1 = true;
       this.deshabilitarBotonS2 = true;
       return;
-    } else if (this.tablaSensores.sensor.st_silo_3 === 'CLOSED') {
+    } else if (this.tablaSensores.sensor.st_s3 === 'CLOSED') {
       this.deshabilitarBotonS1 = false;
       this.deshabilitarBotonS2 = false;
     }
+  }
+
+  updatePercentage(){
+    let numberSilo;
+    this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13=== 'OPEN' ? numberSilo = 3 : '';
+   
+    console.log("NUMBER SILO ACTUALZIAR", numberSilo);
+    console.log("SLIDER ACTUALZIAR", this.sliderValue);
+    
+    // this.socket.emit('web_to_server', {
+    //   id: this.uid,
+    //   type: "write",
+    //   silo_pos: numberSilo,
+    //   value: this.sliderValue
+    // });
   }
 }
