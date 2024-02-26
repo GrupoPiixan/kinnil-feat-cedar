@@ -69,6 +69,11 @@ const iotCoreServer = async () => {
         const data = JSON.parse(decoder.decode(payload));
         console.log("Received from", topic, data);
 
+        // ! Parche por error de Firmware
+        data.st_s1 = data.st_s1.toUpperCase();
+        data.st_s2 = data.st_s2.toUpperCase();
+        data.st_s3 = data.st_s3.toUpperCase();
+
         if (tempBoards[data.idBoard] === undefined) {
             console.log('New data from board, saving');
             tempBoards[data.idBoard] = data;
@@ -98,42 +103,46 @@ const iotCoreServer = async () => {
         let r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
 
         let data = {
-            board_id: "eth_iot_0001",
+            id: "eth_iot_0001",
             type: "status",                // status" --> all variables status
             plc_st: "PLUGGED",             // PLUGGED" --> PLC is plugged to board, "UNPLUGGED" --> PLC is unplugged
             plc_conn: true,                // rue --> board is connected to modbus PLC correctly, false -> modbus error
-            bands_ftmin: 0,              // ands speeed in ft/min 
-            bands_rpm: 0,                // ands speed in RPM´s
-            st_bands: "RUNNING",           // RUNNING" --> bands are running, "STOPPED" --> bands are stopped
-            st_silo_1: "OPEN",             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
-            st_silo_2: "CLOSED",           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
-            st_silo_3: "CLOSED",           // OPEN" --> silo 3 is open, "CLOSED" --> silo 3 is closed
-            maintenance: "OFF"             // OFF" --> alert not triggered, "ON" --> alert triggered
+            ftmin: 0,              // ands speeed in ft/min 
+            rpm: 0,                // ands speed in RPM´s
+            bands: "STOPPED",           // RUNNING" --> bands are running, "STOPPED" --> bands are stopped
+            st_s1: "CLOSED",             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
+            st_s2: "CLOSED",           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
+            st_s3: "CLOSED",           // OPEN" --> silo 3 is open, "CLOSED" --> silo 3 is closed
+            p_s1: 0,             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
+            p_s2: 0,           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
+            p_s3: 0,  
+            mtto: "OFF",             // OFF" --> alert not triggered, "ON" --> alert triggered
+            al_1: "OK"
         };
 
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "eth_iot_0001";
-        data.bands_ftmin = r_ftMin;
-        data.bands_rpm = r_RPM;
+        data.id = "eth_iot_0001";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "eth_iot_0002";
-        data.bands_ftmin = r_ftMin;
-        data.bands_rpm = r_RPM;
+        data.id = "eth_iot_0002";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.idBoard = "eth_iot_0003";
-        data.bands_ftmin = r_ftMin;
-        data.bands_rpm = r_RPM;
+        data.id = "eth_iot_0003";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
         await saveDataPLC(data);
-    }, 35000);*/
+    }, 5000);*/
 };
 
 module.exports = {
