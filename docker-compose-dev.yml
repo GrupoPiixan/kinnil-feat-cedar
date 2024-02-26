@@ -33,7 +33,7 @@ services:
     working_dir: /home/dev
     #* Container name
     container_name: kinnil-cedar-front
-    command: sh -c "npm i -g @angular/cli@13.0.0 && npm i && ng serve --port 4200 --host 0.0.0.0"
+    command: sh -c "npm i -g @angular/cli@13.0.0 && npm i && ng serve --port 4200 --host 0.0.0.0 --disable-host-check"
     #* Port exhibition
     ports:
       - 4200:4200
