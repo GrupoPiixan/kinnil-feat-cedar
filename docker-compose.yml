@@ -1,0 +1,52 @@
+#* Docker Compose version
+version: '3.9'
+
+#* All services to be used will be declared
+services:
+
+  #* Service name
+  server:
+    #* Image to use
+    image: node:18.15.0
+    init: true
+    #* Directory where you will work
+    working_dir: /home/dev
+    #* Container name
+    container_name: cmplc-server
+    command: sh -c "npm i -g nodemon && npm i && npm run start:sync"
+    #* Port exhibition
+    ports:
+      - 8080:8080
+      - 3006:3006
+      - 3005:3005
+    networks:
+      - intranet
+    #* Volume where information persists
+    volumes:
+      - ./server:/home/dev
+      - server:/home/dev/src/logs
+    restart: unless-stopped
+
+  #* Service name
+  front:
+    build:
+      context: .
+      dockerfile: DockerFile.front
+    #* Container name
+    container_name: cmplc-front
+    #* Port exhibition
+    ports:
+      - 4200:80
+    networks:
+      - intranet
+    depends_on:
+      - server
+
+#* Volumes to be used
+volumes:
+  server:
+
+#* Networks to be used
+networks:
+  intranet:
+    driver: bridge
