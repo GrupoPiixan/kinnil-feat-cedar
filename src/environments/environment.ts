@@ -13,8 +13,8 @@ export const environment = {
     appId: "1:212415381093:web:8977bcb7cdd2d2d95b908c",
     measurementId: "G-CGQVNQPGS9",
   },
-  urlAPIServer: "http://68.183.26.55:8080/api",
-  urlSocketIO: "http://68.183.26.55:3005",
+  urlAPIServer: "https://back.kinnil.com:8080/api",
+  urlSocketIO: "https://back.kinnil.com:3005",
 };
 
 /*
