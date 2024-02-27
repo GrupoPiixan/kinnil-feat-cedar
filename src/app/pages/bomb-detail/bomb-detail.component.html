@@ -52,11 +52,9 @@
                     <div class="col-3">Silo 1</div>
                     <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s1}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'CLOSED'">
-                      <!-- <button id="playS1" class="btn btn-success btn-circle" (click)="openSilo(1)"
-                        [disabled]="deshabilitarBotonS1"><i class="fas fa-play"></i></button> -->
-                      <button id="playS1" class="btn btn-success btn-circle" data-toggle="modal"
-                        data-target="#modalAlert" [disabled]="deshabilitarBotonS1"><i class="fas fa-play"
-                          (click)="openAlertConfirm(1)"></i></button>
+                      <button (click)="openAlertConfirm(1)" id="playS1" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS1"><i class="fas fa-play"></i>
+                      </button>
                     </div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'OPEN'">
                       <button id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)"
@@ -67,11 +65,10 @@
                     <div class="col-3">Silo 2</div>
                     <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s2}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'CLOSED'">
-                      <!-- <button id="playS2" class="btn btn-success btn-circle" (click)="openSilo(2)"
-                        [disabled]="deshabilitarBotonS2"><i class="fas fa-play"></i></button> -->
-                      <button id="playS2" class="btn btn-success btn-circle" data-toggle="modal"
-                        data-target="#modalAlert" [disabled]="deshabilitarBotonS2"><i class="fas fa-play"
-                          (click)="openAlertConfirm(2)"></i></button>
+                      <button (click)="openAlertConfirm(2)" id="playS2" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS2">
+                        <i class="fas fa-play"></i>
+                      </button>
                     </div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'OPEN'">
                       <button id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)"
@@ -82,11 +79,9 @@
                     <div class="col-3">Silo 3</div>
                     <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s3}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'CLOSED'">
-                      <!-- <button id="playS3" class="btn btn-success btn-circle" (click)="openSilo(3)"
-                        [disabled]="deshabilitarBotonS3"><i class="fas fa-play"></i></button> -->
-                      <button id="playS3" class="btn btn-success btn-circle" data-toggle="modal"
-                        data-target="#modalAlert" [disabled]="deshabilitarBotonS3"><i class="fas fa-play"
-                          (click)="openAlertConfirm(3)"></i></button>
+                      <button (click)="openAlertConfirm(3)" id="playS3" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS3"><i class="fas fa-play"></i>
+                      </button>
                     </div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'OPEN'">
                       <button id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)"
@@ -107,17 +102,32 @@
                   </div>
                 </div>
                 <div class="col-6 pb-5 pt-5">
-                  <div class="slidecontainer mt-3">
+                  <div class="alert alert-danger d-none" role="alert" id="alertNoUpdate" style="text-align: center !important;">
+                   No se realizaron cambios.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="slidecontainer mt-2">
                     <input type="range" min="0" max="100" value="50" class="slider" id="myRange"
                       [(ngModel)]="sliderValue" (ngModelChange)="onInputChange($event)">
                     <div class="contain">
                       <div class="row">
-                        <div class="col-7 pt-3">
+                        <div class="col-7 pt-3" id="sliderText">
                           <p>Porcentaje de apertura: <span id="demo">{{ sliderValue }}%</span></p>
                         </div>
-                        <div class="col-5 pt-1">
+                        <div class="col-5 pt-1"  id="sliderButton">
                           <button id="updatePercentage" class="btn btn-success d-none" data-toggle="modal"
-                          data-target="#modalUpdate">Actualizar</button>
+                            data-target="#modalUpdate">Actualizar</button>
+                        </div>
+                        <div id="contenedor" class="col-12 d-none" style="background-color: #454D55 !important;">
+                          <div class="contenedor-loader">
+                            <div class="loader1"></div>
+                            <div class="loader2"></div>
+                            <div class="loader3"></div>
+                            <div class="loader4"></div>
+                          </div>
+                            <div class="cargando">Actualizando porcentaje...</div>
                         </div>
                       </div>
                     </div>
@@ -202,28 +212,28 @@
   </div>
 
   <div class="modal fade" id="modalUpdate" data-backdrop="static" data-keyboard="false" tabindex="-1"
-  aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-body">
-        <div class="container">
-          <div class="row">
-            <div class="col-12" style="text-align: center !important;">
-              <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
-            </div>
-            <div class="col-12" style="padding-left:0%; padding-right: 0%;">
-              <h5>¿Seguro de actualizar el porcentaje de apertura al {{sliderValue}}%?</h5>
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-12" style="text-align: center !important;">
+                <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
+              </div>
+              <div class="col-12" style="padding-left:0%; padding-right: 0%;">
+                <h5>¿Seguro de actualizar el porcentaje de apertura al {{sliderValue}}%?</h5>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="no-border center-btn mb-3">
-        <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-success ml-4" (click)="updatePercentage()">Si, actualizar</button>
+        <div class="no-border center-btn mb-3">
+          <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success ml-4" (click)="updatePercentage()">Si, actualizar</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
   <div class="modal fade" id="generateReportModal" data-backdrop="static" tabindex="-1"
     aria-labelledby="exampleModalLabel" aria-hidden="true">

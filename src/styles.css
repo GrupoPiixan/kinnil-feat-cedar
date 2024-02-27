@@ -42,3 +42,9 @@
 .center-btn{
     text-align: center !important;
 }
+
+.alert-danger{
+    background-color: #F8D7DA !important;
+    border-color: #F5C6CB !important;
+    color: black !important;
+}

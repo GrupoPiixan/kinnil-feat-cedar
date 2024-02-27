@@ -129,8 +129,7 @@ export class BombDetailComponent implements OnInit {
             }
             this.selectSlider();
             this.lockButtons();
-            console.log("DATA COMPLETO", this.tablaSensores);
-            
+
           });
         });
       });
@@ -138,7 +137,7 @@ export class BombDetailComponent implements OnInit {
     this.initSocketIO();
   }
 
-  selectSlider(){
+  selectSlider() {
     if (this.tablaSensores.sensor.st_s1 === 'OPEN' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
       this.sliderValue = this.tablaSensores.sensor.p_s1;
       document.getElementById('updatePercentage')!.classList.remove('d-none');
@@ -160,8 +159,9 @@ export class BombDetailComponent implements OnInit {
     }
   }
 
-  openAlertConfirm(silo: number){
+  openAlertConfirm(silo: number) {
     this.numberSilo = silo;
+    $('#modalAlert').modal('show')
   }
 
   getTempBgColor() {
@@ -178,7 +178,7 @@ export class BombDetailComponent implements OnInit {
   }
 
   async generateReport() {
-    if(this.reportForm.valid){
+    if (this.reportForm.valid) {
       document.getElementById('fornDownloadReport')!.classList.add('d-none');
       document.getElementById('contenedor')!.classList.remove('d-none');
       let tbody = [[]];
@@ -192,7 +192,7 @@ export class BombDetailComponent implements OnInit {
           ['Registro', 'Día', 'Hora', 'RPM', 'FT/SEC', 'Indicador silo 1 abierto en modo manual', 'Indicador silo 2 abierto en modo manual', 'Indicador silo 3 abierto en modo manual',
             'Indicador bandas encendidas', 'Alerta mantenimento banda, horas cumplidas']
         ];
-  
+
       const respReport = await this.service.generateReport(this.reportForm.value.initDate, this.reportForm.value.finishDate);
       respReport.forEach(dataReport => {
         for (let i = 0; i < dataReport.docs.length; i++) {
@@ -209,9 +209,9 @@ export class BombDetailComponent implements OnInit {
               seconds: number
             }
           };
-  
+
           const date = new Date(element.creacionRegistro.seconds * 1000);
-  
+
           const data = [
             `${date.getFullYear()}/${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()} ${(date.getHours() < 10) ? '0' + date.getHours() : date.getHours()}:${(date.getMinutes() < 10) ? '0' + date.getMinutes() : date.getMinutes()}:${(date.getSeconds() < 10) ? '0' + date.getSeconds() : date.getSeconds()}`,
             `${((date.getMonth() + 1) < 10) ? '0' + (date.getMonth() + 1) : (date.getMonth() + 1)}/${(date.getDate() < 10) ? '0' + date.getDate() : date.getHours()}/${date.getFullYear()}`,
@@ -224,24 +224,24 @@ export class BombDetailComponent implements OnInit {
             element.bands.toString(),
             element.mtto.toString()
           ];
-  
+
           tbody.push(data as [])
         }
-  
+
         var wb = XLSX.utils.book_new();
         var ws = XLSX.utils.aoa_to_sheet([[]]);
-  
+
         XLSX.utils.book_append_sheet(wb, ws, "KinnilCM-ReporteBase");
         XLSX.utils.sheet_add_aoa(ws, reportHeader, { origin: "A1" });
         XLSX.utils.sheet_add_aoa(ws, tbody, { origin: "A6" });
-  
+
         /*if (!ws["!images"]) ws["!images"] = [];
         ws["!images"].push({
           "!link": "http://sheetjs.com/logo.png",
           '!pos': { x: 700, y: 300, w: 64, h: 64 },
           "!datatype": "remote"
         });*/
-  
+
         if (!ws['!cols']) ws['!cols'] = [];
         ws['!cols'][0] = { width: 20 };
         ws['!cols'][1] = { width: 20 };
@@ -249,23 +249,22 @@ export class BombDetailComponent implements OnInit {
         ws['!cols'][3] = { width: 20 };
         ws['!cols'][4] = { width: 20 };
         ws['!cols'][5] = { width: 20 };
-  
+
         XLSX.writeFile(wb, "KinnilCM-ReporteBase.xlsx", { bookSST: true, cellStyles: true, bookImages: true });
         document.getElementById('fornDownloadReport')!.classList.remove('d-none');
         document.getElementById('contenedor')!.classList.add('d-none');
       });
-    
-    }else{
+
+    } else {
       alert("Debes de seleccionar un rango de fechas para poder consultar el reporte");
     }
-    
+
   }
 
   initSocketIO() {
     this.socket = io(environment.urlSocketIO);
 
     this.socket.on('connect', () => {
-      console.log('id connection: ', this.socket.id);
     });
 
     // TODO: mandar a prender o apagar una banda (conveyor)
@@ -291,26 +290,25 @@ export class BombDetailComponent implements OnInit {
 
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
-    if(this.sliderValue !== 0){
+    if (this.sliderValue !== 0) {
       this.socket.emit('web_to_server', {
         board_id: this.uid,
         type: "write",
         silo_pos: silo,
         value: this.sliderValue
       });
-  
+
       this.lockAllButtons();
-  
+
       this.mySetTimeout = setTimeout(() => {
         this.unlockButtons();
         this.lockButtons();
       }, this.timeTimeout);
-  
+
       this.selectSlider();
-  
-      // document.getElementById('updatePercentage')!.classList.remove('d-none');
+
       $('#modalAlert').modal('hide')
-    }else{
+    } else {
       alert("El porcentaje de apertura debe de ser mayor a cero");
     }
   }
@@ -337,7 +335,7 @@ export class BombDetailComponent implements OnInit {
       board_id: this.uid,
       type: "write",
       bands: "stop"
-    }); 
+    });
 
     this.lockAllButtons();
 
@@ -418,15 +416,46 @@ export class BombDetailComponent implements OnInit {
     }
   }
 
-  updatePercentage(){
+  updatePercentage() {
     let numberSilo;
-    this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13=== 'OPEN' ? numberSilo = 3 : '';
-    
+    this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13 === 'OPEN' ? numberSilo = 3 : '';
+
     this.socket.emit('web_to_server', {
       id: this.uid,
       type: "write",
       silo_pos: numberSilo,
       value: this.sliderValue
     });
+
+    $('#modalUpdate').modal('hide')
+    document.getElementById('contenedor')!.classList.remove('d-none');
+    document.getElementById('sliderText')!.classList.add('d-none');
+    document.getElementById('sliderButton')!.classList.add('d-none');
+    document.getElementById('myRange')!.classList.add('d-none');
+    this.lockAllButtons();
+
+    setTimeout(() => {
+      document.getElementById('contenedor')!.classList.add('d-none');
+      document.getElementById('sliderText')!.classList.remove('d-none');
+      document.getElementById('sliderButton')!.classList.remove('d-none');
+      document.getElementById('myRange')!.classList.remove('d-none');
+      this.unlockButtons();
+      this.lockButtons();
+      this.selectSlider();
+      this.updateNotDone();
+    }, this.timeTimeout);
+
+  }
+
+  updateNotDone() {
+    if (this.sliderValue === this.tablaSensores.sensor.p_s1) {
+      document.getElementById('alertNoUpdate')!.classList.remove('d-none');
+    }
+    if (this.sliderValue === this.tablaSensores.sensor.p_s2) {
+      document.getElementById('alertNoUpdate')!.classList.remove('d-none');
+    }
+    if (this.sliderValue === this.tablaSensores.sensor.p_s3) {
+      document.getElementById('alertNoUpdate')!.classList.remove('d-none');
+    }
   }
 }

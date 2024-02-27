@@ -128,3 +128,10 @@ body {
  .no-border{
         border: none;
  }
+
+ .close{
+        color: #000 !important;
+        opacity: 25% !important;
+ }
+
+ 
