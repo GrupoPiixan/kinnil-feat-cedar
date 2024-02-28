@@ -160,8 +160,13 @@ export class BombDetailComponent implements OnInit {
   }
 
   openAlertConfirm(silo: number) {
-    this.numberSilo = silo;
-    $('#modalAlert').modal('show')
+    if(this.sliderValue == 0){
+      alert("El valor de apertura no puede ser 0");
+    }else{
+      this.numberSilo = silo;
+      $('#modalAlert').modal('show')
+    }
+ 
   }
 
   getTempBgColor() {
@@ -290,7 +295,8 @@ export class BombDetailComponent implements OnInit {
 
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
-    if (this.sliderValue !== 0) {
+    console.log("paso primero", new Date());
+    
       this.socket.emit('web_to_server', {
         board_id: this.uid,
         type: "write",
@@ -298,27 +304,39 @@ export class BombDetailComponent implements OnInit {
         value: this.sliderValue
       });
 
-      this.lockAllButtons();
+      setTimeout(() => {
+        console.log("paso medio segundo", new Date());
+        this.socket.emit('web_to_server', {
+          board_id: this.uid,
+          type: 'write',
+          silo: silo,
+          value: "OPEN"
+        });
 
-      this.mySetTimeout = setTimeout(() => {
-        this.unlockButtons();
-        this.lockButtons();
-      }, this.timeTimeout);
+        this.lockAllButtons();
 
-      this.selectSlider();
+        this.mySetTimeout = setTimeout(() => {
+          this.unlockButtons();
+          this.lockButtons();
+        }, this.timeTimeout);
 
-      $('#modalAlert').modal('hide')
-    } else {
-      alert("El porcentaje de apertura debe de ser mayor a cero");
-    }
+        this.selectSlider();
+
+        $('#modalAlert').modal('hide')
+      }, 500);
   }
 
   closedSilo(silo: number) {
+    // this.socket.emit('web_to_server', {
+    //   board_id: this.uid,
+    //   type: "write",
+    //   silo_pos: silo
+    // });
     this.socket.emit('web_to_server', {
       board_id: this.uid,
-      type: "write",
-      "silo_pos": silo,
-      value: 0,
+      type: 'write',
+      silo: silo,
+      value: "CLOSE"
     });
 
     this.lockAllButtons();
