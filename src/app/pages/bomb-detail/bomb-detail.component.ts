@@ -160,13 +160,13 @@ export class BombDetailComponent implements OnInit {
   }
 
   openAlertConfirm(silo: number) {
-    if(this.sliderValue == 0){
+    if (this.sliderValue == 0) {
       alert("El valor de apertura no puede ser 0");
-    }else{
+    } else {
       this.numberSilo = silo;
       $('#modalAlert').modal('show')
     }
- 
+
   }
 
   getTempBgColor() {
@@ -295,35 +295,31 @@ export class BombDetailComponent implements OnInit {
 
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
-    console.log("paso primero", new Date());
-    
-      this.socket.emit('web_to_server', {
-        board_id: this.uid,
-        type: "write",
-        silo_pos: silo,
-        value: this.sliderValue
-      });
+    this.socket.emit('web_to_server', {
+      board_id: this.uid,
+      type: "write",
+      silo_pos: silo,
+      value: this.sliderValue
+    });
 
-      setTimeout(() => {
-        console.log("paso medio segundo", new Date());
-        this.socket.emit('web_to_server', {
-          board_id: this.uid,
-          type: 'write',
-          silo: silo,
-          value: "OPEN"
-        });
+    //   this.socket.emit('web_to_server', {
+    //     board_id: this.uid,
+    //     type: 'write',
+    //     silo: silo,
+    //     value: "OPEN"
+    //   });
 
-        this.lockAllButtons();
+    this.lockAllButtons();
 
-        this.mySetTimeout = setTimeout(() => {
-          this.unlockButtons();
-          this.lockButtons();
-        }, this.timeTimeout);
+    this.mySetTimeout = setTimeout(() => {
+      this.unlockButtons();
+      this.lockButtons();
+    }, this.timeTimeout);
 
-        this.selectSlider();
+    this.selectSlider();
 
-        $('#modalAlert').modal('hide')
-      }, 500);
+    $('#modalAlert').modal('hide')
+
   }
 
   closedSilo(silo: number) {
