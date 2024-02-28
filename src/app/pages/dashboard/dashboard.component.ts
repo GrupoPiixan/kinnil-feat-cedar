@@ -56,7 +56,7 @@ export class DashboardComponent implements OnInit {
       text: 'Alerta mantenimento banda, horas cumplidas',
       show: true
     }, {
-      text: 'Alerma del RPM',
+      text: 'Alarma del RPM',
       show: true
     }, {
       text: 'Posición Silo 1',
