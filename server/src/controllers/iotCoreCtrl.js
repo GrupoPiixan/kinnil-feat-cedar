@@ -70,9 +70,9 @@ const iotCoreServer = async () => {
         console.log("Received from", topic, data);
 
         // ! Parche por error de Firmware
-        data.st_s1 = data.st_s1.toUpperCase();
-        data.st_s2 = data.st_s2.toUpperCase();
-        data.st_s3 = data.st_s3.toUpperCase();
+        // data.st_s1 = data.st_s1.toUpperCase();
+        // data.st_s2 = data.st_s2.toUpperCase();
+        // data.st_s3 = data.st_s3.toUpperCase();
 
         if (tempBoards[data.idBoard] === undefined) {
             console.log('New data from board, saving');
@@ -103,7 +103,7 @@ const iotCoreServer = async () => {
         let r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
 
         let data = {
-            id: "eth_iot_0001",
+            id: "eth_iot_0001-pid",
             type: "status",                // status" --> all variables status
             plc_st: "PLUGGED",             // PLUGGED" --> PLC is plugged to board, "UNPLUGGED" --> PLC is unplugged
             plc_conn: true,                // rue --> board is connected to modbus PLC correctly, false -> modbus error
@@ -124,21 +124,21 @@ const iotCoreServer = async () => {
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.id = "eth_iot_0001";
+        data.id = "eth_iot_0001-pid";
         data.ftmin = r_ftMin;
         data.rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.id = "eth_iot_0002";
+        data.id = "eth_iot_0002-pid";
         data.ftmin = r_ftMin;
         data.rpm = r_RPM;
         await saveDataPLC(data);
 
         r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
         r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
-        data.id = "eth_iot_0003";
+        data.id = "eth_iot_0003-pid";
         data.ftmin = r_ftMin;
         data.rpm = r_RPM;
         await saveDataPLC(data);
