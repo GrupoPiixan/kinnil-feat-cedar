@@ -437,7 +437,7 @@ export class BombDetailComponent implements OnInit {
     }
 
     this.socket.emit('web_to_server', {
-      id: this.uid,
+      board_id: this.uid,
       type: "write",
       silo_pos: this.setSilo,
       value: valueSlider
