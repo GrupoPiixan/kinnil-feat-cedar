@@ -23,11 +23,20 @@ declare var $: any;
   styleUrls: ['./bomb-detail.component.css']
 })
 export class BombDetailComponent implements OnInit {
-  sliderValue: number = 0;
+  sliderValue1: number = 0;
+  sliderValue2: number = 0;
+  sliderValue3: number = 0;
   numberSilo: number = 0;
+  setSilo: number = 0;
 
-  onInputChange(event: any) {
-    this.sliderValue = event.target.value;
+  onInputChange1(event: any) {
+    this.sliderValue1 = event?.target?.value;
+  }
+  onInputChange2(event: any) {
+    this.sliderValue2 = event?.target?.value;
+  }
+  onInputChange3(event: any) {
+    this.sliderValue3 = event?.target?.value;
   }
   // * Formulario de reporte
   reportForm = new FormGroup({
@@ -65,7 +74,7 @@ export class BombDetailComponent implements OnInit {
   categorias: any = [];
   //  chartOptions: Highcharts.Options = { }
 
-  timeTimeout: number = 15000;
+  timeTimeout: number = 5000;
 
   // * Variables para grafica con zoom
   public primaryXAxis: any;
@@ -138,35 +147,14 @@ export class BombDetailComponent implements OnInit {
   }
 
   selectSlider() {
-    if (this.tablaSensores.sensor.st_s1 === 'OPEN' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
-      this.sliderValue = this.tablaSensores.sensor.p_s1;
-      document.getElementById('updatePercentage')!.classList.remove('d-none');
-    }
-
-    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'OPEN' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
-      this.sliderValue = this.tablaSensores.sensor.p_s2;
-      document.getElementById('updatePercentage')!.classList.remove('d-none');
-    }
-
-    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'OPEN') {
-      this.sliderValue = this.tablaSensores.sensor.p_s3;
-      document.getElementById('updatePercentage')!.classList.remove('d-none');
-    }
-
-    if (this.tablaSensores.sensor.st_s1 === 'CLOSED' && this.tablaSensores.sensor.st_s2 === 'CLOSED' && this.tablaSensores.sensor.st_s3 === 'CLOSED') {
-      this.sliderValue = 0;
-      document.getElementById('updatePercentage')!.classList.add('d-none');
-    }
+    this.sliderValue1 = this.tablaSensores.sensor.p_s1;
+    this.sliderValue2 = this.tablaSensores.sensor.p_s2;
+    this.sliderValue3 = this.tablaSensores.sensor.p_s3;
   }
 
   openAlertConfirm(silo: number) {
-    if (this.sliderValue == 0) {
-      alert("El valor de apertura no puede ser 0");
-    } else {
-      this.numberSilo = silo;
-      $('#modalAlert').modal('show')
-    }
-
+    this.numberSilo = silo;
+    $('#modalAlert').modal('show')
   }
 
   getTempBgColor() {
@@ -295,19 +283,19 @@ export class BombDetailComponent implements OnInit {
 
   // * Methods to run or stop a belt and to open or close a silo
   openSilo(silo: number) {
+    // this.socket.emit('web_to_server', {
+    //   board_id: this.uid,
+    //   type: "write",
+    //   silo_pos: silo,
+    //   value: this.sliderValue1
+    // });
+
     this.socket.emit('web_to_server', {
       board_id: this.uid,
-      type: "write",
-      silo_pos: silo,
-      value: this.sliderValue
+      type: 'write',
+      silo: silo,
+      value: "OPEN"
     });
-
-    //   this.socket.emit('web_to_server', {
-    //     board_id: this.uid,
-    //     type: 'write',
-    //     silo: silo,
-    //     value: "OPEN"
-    //   });
 
     this.lockAllButtons();
 
@@ -431,28 +419,73 @@ export class BombDetailComponent implements OnInit {
   }
 
   updatePercentage() {
-    let numberSilo;
-    this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13 === 'OPEN' ? numberSilo = 3 : '';
+    let valueSlider = 0;
+    // this.tablaSensores.sensor.st_s1 === 'OPEN' ? numberSilo = 1 : this.tablaSensores.sensor.st_s2 === 'OPEN' ? numberSilo = 2 : this.tablaSensores.sensor.st_s13 === 'OPEN' ? numberSilo = 3 : '';
+
+    switch (this.setSilo) {
+      case 1:
+        valueSlider = this.sliderValue1;
+        break;
+      case 2:
+        valueSlider = this.sliderValue2;
+        break;
+      case 3:
+        valueSlider = this.sliderValue3;
+        break;
+    }
 
     this.socket.emit('web_to_server', {
       id: this.uid,
       type: "write",
-      silo_pos: numberSilo,
-      value: this.sliderValue
+      silo_pos: this.setSilo,
+      value: valueSlider
     });
 
+    switch (this.setSilo) {
+      case 1:
+        document.getElementById('contenedor1')!.classList.remove('d-none');
+        document.getElementById('sliderText1')!.classList.add('d-none');
+        document.getElementById('sliderButton1')!.classList.add('d-none');
+        document.getElementById('myRange1')!.classList.add('d-none');
+        break;
+      case 2:
+        document.getElementById('contenedor2')!.classList.remove('d-none');
+        document.getElementById('sliderText2')!.classList.add('d-none');
+        document.getElementById('sliderButton2')!.classList.add('d-none');
+        document.getElementById('myRange2')!.classList.add('d-none');
+        break;
+      case 3:
+        document.getElementById('contenedor3')!.classList.remove('d-none');
+        document.getElementById('sliderText3')!.classList.add('d-none');
+        document.getElementById('sliderButton3')!.classList.add('d-none');
+        document.getElementById('myRange3')!.classList.add('d-none');
+        break;
+    }
+
     $('#modalUpdate').modal('hide')
-    document.getElementById('contenedor')!.classList.remove('d-none');
-    document.getElementById('sliderText')!.classList.add('d-none');
-    document.getElementById('sliderButton')!.classList.add('d-none');
-    document.getElementById('myRange')!.classList.add('d-none');
     this.lockAllButtons();
 
     setTimeout(() => {
-      document.getElementById('contenedor')!.classList.add('d-none');
-      document.getElementById('sliderText')!.classList.remove('d-none');
-      document.getElementById('sliderButton')!.classList.remove('d-none');
-      document.getElementById('myRange')!.classList.remove('d-none');
+      switch (this.setSilo) {
+        case 1:
+          document.getElementById('contenedor1')!.classList.add('d-none');
+          document.getElementById('sliderText1')!.classList.remove('d-none');
+          document.getElementById('sliderButton1')!.classList.remove('d-none');
+          document.getElementById('myRange1')!.classList.remove('d-none');
+          break;
+        case 2:
+          document.getElementById('contenedor2')!.classList.add('d-none');
+          document.getElementById('sliderText2')!.classList.remove('d-none');
+          document.getElementById('sliderButton2')!.classList.remove('d-none');
+          document.getElementById('myRange2')!.classList.remove('d-none');
+          break;
+        case 3:
+          document.getElementById('contenedor3')!.classList.add('d-none');
+          document.getElementById('sliderText3')!.classList.remove('d-none');
+          document.getElementById('sliderButton3')!.classList.remove('d-none');
+          document.getElementById('myRange3')!.classList.remove('d-none');
+          break;
+      }
       this.unlockButtons();
       this.lockButtons();
       this.selectSlider();
@@ -461,14 +494,18 @@ export class BombDetailComponent implements OnInit {
 
   }
 
+  setNumberSilo(silo: number) {
+    this.setSilo = silo;
+  }
+
   updateNotDone() {
-    if (this.sliderValue === this.tablaSensores.sensor.p_s1) {
+    if (this.sliderValue1 === this.tablaSensores.sensor.p_s1) {
       document.getElementById('alertNoUpdate')!.classList.remove('d-none');
     }
-    if (this.sliderValue === this.tablaSensores.sensor.p_s2) {
+    if (this.sliderValue2 === this.tablaSensores.sensor.p_s2) {
       document.getElementById('alertNoUpdate')!.classList.remove('d-none');
     }
-    if (this.sliderValue === this.tablaSensores.sensor.p_s3) {
+    if (this.sliderValue3 === this.tablaSensores.sensor.p_s3) {
       document.getElementById('alertNoUpdate')!.classList.remove('d-none');
     }
   }

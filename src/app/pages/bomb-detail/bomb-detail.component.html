@@ -45,12 +45,12 @@
             <!--Reporte-->
             <div class="container">
               <div class="row">
-                <div class="col-6">
+                <div class="col-12">
                   <h4 class="font-bold">Última conexión:
                     {{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}</h4>
                   <div class="row mb-1">
-                    <div class="col-3">Silo 1</div>
-                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s1}}</div>
+                    <div class="col-2">Silo 1</div>
+                    <div class="col-3">Estatus: {{tablaSensores.sensor?.st_s1}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'CLOSED'">
                       <button (click)="openAlertConfirm(1)" id="playS1" class="btn btn-success btn-circle"
                         data-toggle="modal" [disabled]="deshabilitarBotonS1"><i class="fas fa-play"></i>
@@ -60,10 +60,36 @@
                       <button id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)"
                         [disabled]="deshabilitarBotonStopS1"><i class="fas fa-stop"></i></button>
                     </div>
+                    <div class="col-5">
+                      <div class="slidecontainerS1 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange1"
+                          [(ngModel)]="sliderValue1" (ngModelChange)="onInputChange1($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-10 pt-3" id="sliderText1">
+                              <p>Porcentaje de apertura del silo 1: <span id="demo">{{ sliderValue1 }}%</span></p>
+                            </div>
+                            <div class="col-2 pt-1"  id="sliderButton1">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(1)">Actualizar silo 1</button>
+                            </div>
+                            <div id="contenedor1" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                                <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="row mb-1">
-                    <div class="col-3">Silo 2</div>
-                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s2}}</div>
+                    <div class="col-2">Silo 2</div>
+                    <div class="col-3">Estatus: {{tablaSensores.sensor?.st_s2}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'CLOSED'">
                       <button (click)="openAlertConfirm(2)" id="playS2" class="btn btn-success btn-circle"
                         data-toggle="modal" [disabled]="deshabilitarBotonS2">
@@ -74,10 +100,36 @@
                       <button id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)"
                         [disabled]="deshabilitarBotonStopS2"><i class="fas fa-stop"></i></button>
                     </div>
+                    <div class="col-5">
+                      <div class="slidecontainerS2 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange2"
+                          [(ngModel)]="sliderValue2" (ngModelChange)="onInputChange2($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-10 pt-3" id="sliderText2">
+                              <p>Porcentaje de apertura del silo 2: <span id="demo">{{ sliderValue2 }}%</span></p>
+                            </div>
+                            <div class="col-2 pt-1"  id="sliderButton2">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(2)">Actualizar silo 2</button>
+                            </div>
+                            <div id="contenedor2" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                                <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="row mb-1">
-                    <div class="col-3">Silo 3</div>
-                    <div class="col-6">Estatus: {{tablaSensores.sensor?.st_s3}}</div>
+                    <div class="col-2">Silo 3</div>
+                    <div class="col-3">Estatus: {{tablaSensores.sensor?.st_s3}}</div>
                     <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'CLOSED'">
                       <button (click)="openAlertConfirm(3)" id="playS3" class="btn btn-success btn-circle"
                         data-toggle="modal" [disabled]="deshabilitarBotonS3"><i class="fas fa-play"></i>
@@ -87,10 +139,36 @@
                       <button id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)"
                         [disabled]="deshabilitarBotonStopS3"><i class="fas fa-stop"></i></button>
                     </div>
+                    <div class="col-5">
+                      <div class="slidecontainerS3 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange3"
+                          [(ngModel)]="sliderValue3" (ngModelChange)="onInputChange3($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-10 pt-3" id="sliderText3">
+                              <p>Porcentaje de apertura del silo 3: <span id="demo">{{ sliderValue3 }}%</span></p>
+                            </div>
+                            <div class="col-2 pt-1"  id="sliderButton3">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(3)">Actualizar silo 3</button>
+                            </div>
+                            <div id="contenedor3" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                                <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   <div class="row mb-1">
-                    <div class="col-3">Conveyor</div>
-                    <div class="col-6">Estatus: {{tablaSensores.sensor?.bands}}</div>
+                    <div class="col-2">Conveyor</div>
+                    <div class="col-3">Estatus: {{tablaSensores.sensor?.bands}}</div>
                     <div class="co-3 pl-2" *ngIf="tablaSensores.sensor?.bands == 'STOPPED'">
                       <button class="btn btn-success btn-circle" (click)="runBand()" [disabled]="deshabilitarBotonC"><i
                           class="fas fa-play"></i></button>
@@ -99,6 +177,7 @@
                       <button class="btn btn-danger-circle btn-danger" (click)="stoppedBand()"
                         [disabled]="deshabilitarBotonStopC"><i class="fas fa-stop"></i></button>
                     </div>
+                    <div class="col-4"></div>
                   </div>
                 </div>
                 <div class="col-6 pb-5 pt-5">
@@ -108,7 +187,7 @@
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
-                  <div class="slidecontainer mt-2">
+                  <!-- <div class="slidecontainer mt-2">
                     <input type="range" min="0" max="100" value="50" class="slider" id="myRange"
                       [(ngModel)]="sliderValue" (ngModelChange)="onInputChange($event)">
                     <div class="contain">
@@ -131,7 +210,7 @@
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
             </div>
@@ -198,7 +277,7 @@
                 <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
               </div>
               <div class="col-12" style="padding-left:20%; padding-right: 20%;">
-                <h5>¿Seguro de abrir el silo {{numberSilo}} al {{sliderValue}}%?</h5>
+                <h5>¿Seguro de abrir el silo {{numberSilo}}?</h5>
               </div>
             </div>
           </div>
@@ -222,7 +301,7 @@
                 <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
               </div>
               <div class="col-12" style="padding-left:0%; padding-right: 0%;">
-                <h5>¿Seguro de actualizar el porcentaje de apertura al {{sliderValue}}%?</h5>
+                <h5>¿Seguro de actualizar el porcentaje de apertura?</h5>
               </div>
             </div>
           </div>
