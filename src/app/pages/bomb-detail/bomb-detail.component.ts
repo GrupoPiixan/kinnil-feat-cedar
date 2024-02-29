@@ -30,13 +30,15 @@ export class BombDetailComponent implements OnInit {
   setSilo: number = 0;
 
   onInputChange1(event: any) {
-    this.sliderValue1 = event?.target?.value;
+    this.sliderValue1 = event.target.value;
   }
   onInputChange2(event: any) {
-    this.sliderValue2 = event?.target?.value;
+    console.log("evento", event);
+    
+    this.sliderValue2 = event.target.value;
   }
   onInputChange3(event: any) {
-    this.sliderValue3 = event?.target?.value;
+    this.sliderValue3 = event.target.value;
   }
   // * Formulario de reporte
   reportForm = new FormGroup({
