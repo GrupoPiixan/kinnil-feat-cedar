@@ -52,4 +52,7 @@ export class GetDataService {
     return this.afs.collection('quectel', ref => ref.where("creacionRegistro", ">=", new Date(`${initDate} 00:00:00`)).where("creacionRegistro", "<=", new Date(`${finishDate} 23:59:59`))).get();
   }
 
+  async createLog(log: any){
+    return this.afs.collection('logs').add(log);
+  }
 }
