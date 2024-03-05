@@ -12,32 +12,41 @@ services:
     #* Directory where you will work
     working_dir: /home/dev
     #* Container name
-    container_name: kinnil-cedar-server
+    container_name: cmplc-server
     command: sh -c "npm i -g nodemon && npm i && npm run start:sync"
     #* Port exhibition
     ports:
       - 8080:8080
       - 3006:3006
       - 3005:3005
+    networks:
+      - intranet
     #* Volume where information persists
     volumes:
       - ./server:/home/dev
+      - server:/home/dev/src/logs
     restart: unless-stopped
 
   #* Service name
   front:
-    #* Image to use
-    image: node:14.17.5
-    init: true
-    #* Directory where you will work
-    working_dir: /home/dev
+    build:
+      context: .
+      dockerfile: DockerFile.front
     #* Container name
-    container_name: kinnil-cedar-front
-    command: sh -c "npm i -g @angular/cli@13.0.0 && npm i && ng serve --port 4200 --host 0.0.0.0 --disable-host-check"
+    container_name: cmplc-front
     #* Port exhibition
     ports:
-      - 4200:4200
-    #* Volume where information persists
-    volumes:
-      - .:/home/dev
-    restart: unless-stopped
+      - 4200:80
+    networks:
+      - intranet
+    depends_on:
+      - server
+
+#* Volumes to be used
+volumes:
+  server:
+
+#* Networks to be used
+networks:
+  intranet:
+    driver: bridge

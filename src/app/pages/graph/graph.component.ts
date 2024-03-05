@@ -13,7 +13,7 @@ declare var $: any;
   styleUrls: ['./graph.component.css']
 })
 export class GraphComponent implements OnInit {
-  
+
   options: any;
   options2: any;
   updateOptions: any;
@@ -22,8 +22,6 @@ export class GraphComponent implements OnInit {
   private oneDay = 24 * 3600 * 1000;
   private now: Date = new Date();
   private value: number = 0;
-  private data: any[] = [];
-  private data2: any[] = [];
   private timer: any;
 
   private preison: any[] = [];
@@ -32,9 +30,8 @@ export class GraphComponent implements OnInit {
   constructor(private service: GetDataService, private datePipe: DatePipe, private routeparam: ActivatedRoute) { }
 
   ngOnInit(): void {
+
     // * generate some random testing data:
-    this.data = [];
-    this.data2 = [];
     this.now = new Date();
     this.value = Math.random() * 1000;
 
@@ -54,7 +51,7 @@ export class GraphComponent implements OnInit {
         trigger: 'axis',
         formatter: (params: any) => {
           let temp = params[0]
-          return 'Presión : ' + parseFloat(temp.value[1]).toFixed(2) + ' ' + temp.value[0]
+          return 'RPM : ' + parseFloat(temp.value[1]).toFixed(2) + ' ' + temp.value[0]
         },
         axisPointer: {
           animation: false
@@ -69,7 +66,7 @@ export class GraphComponent implements OnInit {
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        max: 1500,
+        max: 10000,
         splitLine: {
           show: false
         }
@@ -82,12 +79,12 @@ export class GraphComponent implements OnInit {
         }
       ],
       series: [{
-        name: 'Presión',
+        name: 'RPM',
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
         color: "rgb(166,206,58)",
-        data: this.data
+        data:[]
       }
       ]
     };
@@ -102,7 +99,7 @@ export class GraphComponent implements OnInit {
         trigger: 'axis',
         formatter: (params: any) => {
           let temp = params[0]
-          return 'Temperatura : ' + parseFloat(temp.value[1]).toFixed(2) + ' ' + temp.value[0]
+          return 'FT/SEC : ' + parseFloat(temp.value[1]).toFixed(2) + ' ' + temp.value[0]
         },
         axisPointer: {
           animation: false
@@ -117,7 +114,7 @@ export class GraphComponent implements OnInit {
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        max: 100,
+        max: 10000,
         splitLine: {
           show: false
         }
@@ -130,12 +127,12 @@ export class GraphComponent implements OnInit {
         }
       ],
       series: [{
-        name: 'Temperatura',
+        name: 'FT/SEC',
         type: 'line',
         showSymbol: false,
         hoverAnimation: false,
         color: "rgb(236,8,39)",
-        data: this.data2
+        data:[]
       }
       ]
     };
@@ -143,82 +140,82 @@ export class GraphComponent implements OnInit {
     this.preison = [];
     this.teperatura = [];
 
+    //* get init data Char
     this.service.getDataChart('quectel', idBomb?.toString() || '').subscribe(data => {
-      data.map(item => {
-        let temp: any = item.payload.doc.data();
+      data.forEach(item => {
+        let temp: any = item.data()
+        
         this.now = new Date(temp.creacionRegistro.seconds * 1000)
-        //TODO preison = temp.a1;
-        //TODO teperatura = temp.a2;
+
         let datoPresion = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.a1
+            temp.rpm
           ]
         };
         let datoTemperatura = {
           name: this.now.toString(),
           value: [
             this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
-            temp.a2
+            temp.ftmin
           ]
         };
-        this.preison.unshift(datoPresion);
-        this.teperatura.unshift(datoTemperatura);
+        this.preison.push(datoPresion);
+        this.teperatura.push(datoTemperatura);
+      });
+      this.updateDataChar(idBomb);
+    }); 
+  }
 
-        // * Update series data:
+  // * Update series data:
+  updateDataChar(bomb:string|null){
+    this.service.getData('quectel', bomb?.toString() || '').subscribe(data => {
+      data.map(item => {
+        let temp: any = item.payload.doc.data();
+        console.log("AAAAAAAAA", temp);
+
+        this.now = new Date(temp.creacionRegistro.seconds * 1000)
+  
+        let datoPresion = {
+          name: this.now.toString(),
+          value: [
+            this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
+            temp.rpm
+          ]
+        };
+        let datoTemperatura = {
+          name: this.now.toString(),
+          value: [
+            this.datePipe.transform(this.now, 'YYYY/MM/dd HH:mm:ss'),
+            temp.ftmin
+          ]
+        };
+        this.preison.unshift(datoPresion)
+        this.teperatura.unshift(datoTemperatura)
         this.updateOptions = {
           series: [{
-            name: 'Presión',
+            name: 'RPM',
             type: 'line',
             showSymbol: false,
             hoverAnimation: false,
-            data: this.preison
+            data: [...this.preison]
           }]
         };
         this.updateOptions2 = {
           series: [{
-            name: 'Temperatura',
+            name: 'FT/SEC',
             type: 'line',
             showSymbol: false,
             hoverAnimation: false,
-            data: this.teperatura
+            data: [...this.teperatura]
           }]
         };
-      });
-    });
-  }
-
-  timestampToDate(fecha: any) {
-    let data = new Date(fecha * 1000);
-    return this.datePipe.transform(data, 'dd/MM/YY HH:mm:ss');
+      })
+    })
   }
 
   ngOnDestroy() {
     clearInterval(this.timer);
-  }
-
-  randomData() {
-    this.now = new Date(this.now.getTime() + this.oneDay);
-    this.value = Math.random() * (80 - 20) + 20;
-    return {
-      name: this.now.toString(),
-      value: [
-        [this.now.getFullYear(), this.now.getMonth() + 1, this.now.getDate()].join('/'),
-        Math.round(this.value)
-      ]
-    };
-  }
-
-  randomData2() {
-    this.now = new Date(this.now.getTime() + this.oneDay);
-    this.value = Math.random() * (300 - 1) + 1;
-    return {
-      name: this.now.toString(),
-      value: [
-        this.datePipe.transform(this.now, 'dd/MM/YY HH:mm:ss'),
-        Math.round(this.value)
-      ]
-    };
   }
 }

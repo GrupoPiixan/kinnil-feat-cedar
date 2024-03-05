@@ -16,7 +16,6 @@ import { environment } from 'src/environments/environment';
 import { CheckPrivilegesService } from '../../utils/check-privileges.service';
 
 declare const $: any;
-declare const io: any;
 
 @Component({
   selector: 'app-machines',
@@ -40,16 +39,8 @@ export class MachinesComponent implements OnInit {
   submitted = false;
   camiones = ['Bomba', 'Trompo'];
   trucksForm = new FormGroup({
-    IDSensor: new FormControl('', [Validators.required, Validators.nullValidator]),
+    noBases: new FormControl('', [Validators.required, Validators.nullValidator]),
     Nombre: new FormControl('', [Validators.required, Validators.nullValidator]),
-    tipo: new FormControl('', [Validators.required]),
-    anio: new FormControl('', [Validators.required, Validators.pattern('^[0-9]+$')]),
-    marca: new FormControl('', Validators.required),
-    modelo: new FormControl('', Validators.required),
-    placa: new FormControl('', [Validators.required, Validators.maxLength(10), Validators.pattern('^[A-Z0-9-]+$')]),
-    gps: new FormControl('', [Validators.required, Validators.pattern('^[0-9-,.]+$')]),
-    km: new FormControl('', Validators.required),
-    vin: new FormControl(),
     uMantenimiento: new FormControl('', Validators.required),
     pMantenimiento: new FormControl('', Validators.required),
     lOperacion: new FormControl('', [Validators.required, Validators.min(1), Validators.max(60)]),
@@ -61,6 +52,7 @@ export class MachinesComponent implements OnInit {
     tSPoint: new FormControl('', [Validators.required, Validators.min(1)]),
     tMax: new FormControl('', [Validators.required]),
     uid: new FormControl(),
+    idBoards: new FormControl(),
     configVersion: new FormControl(),
   });
 
@@ -73,28 +65,10 @@ export class MachinesComponent implements OnInit {
       text: 'uid',
       show: false
     },{
-      text: 'ID',
-      show: true
-    }, {
       text: 'Nombre',
       show: true
-    }, {
-      text: 'Tipo',
-      show: true
-    }, {
-      text: 'Placas',
-      show: true
-    }, {
-      text: 'Año',
-      show: true
-    }, {
-      text: 'Marca',
-      show: true
-    }, {
-      text: 'Marca',
-      show: true
-    }, {
-      text: 'Modelo',
+    },{
+      text: 'Cantidad de bases',
       show: true
     }],
     buttons: {
@@ -122,7 +96,6 @@ export class MachinesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getData();
-    this.connectToSocket();
   }
 
   // * Obtenemos los datos de los camiones
@@ -134,7 +107,7 @@ export class MachinesComponent implements OnInit {
         let camion: any = truck.payload.doc.data();
         camion.uid = truck.payload.doc.id;
         this.tablaCamiones.push(camion);
-        this.dataRows.push(([camion.uid,camion.IDSensor, camion.Nombre, camion.anio, camion.marca, camion.modelo, camion.placa, camion.tipo]));
+        this.dataRows.push(([camion.uid, camion.Nombre, camion.noBases]));
       });
       // * Mostramos el mapa y tabla de sensores
       this.showComponents = true;
@@ -144,21 +117,23 @@ export class MachinesComponent implements OnInit {
   // * Crear camión nuevo
   onTrucks() {
     let confirm = false;
-    console.log(this.trucksForm);
     if (this.trucksForm.valid) {
-      this.tablaCamiones.forEach((x: any) => {
-        if (x.IDSensor == this.trucksForm.value.IDSensor) {
-          alert('ID (tablilla) ya utilizado')
-          confirm = true
-        }
-      });
-      if (confirm == false) {
-        this.trucksForm.value.configVersion = `${this.trucksForm.value.IDSensor}-0A`
-        this.service.setTruckData(this.trucksForm).then(() => {
+      // this.tablaCamiones.forEach((x: any) => {
+      //   if (x.noBases == this.trucksForm.value.noBases) {
+      //     alert('ID (tablilla) ya utilizado')
+      //     confirm = true
+      //   }
+      // });
+      // if (confirm == false) {
+        this.trucksForm.value.configVersion = `${this.trucksForm.value.noBases}-0A`
+        this.trucksForm.get("noBases")?.setValue(parseInt(this.trucksForm.get("noBases")?.value || ""))
+        let form = this.trucksForm.value;
+        form.idBoards = ["","","",""];
+        this.service.setTruckData(form).then(() => {
           alert('Camión registrado con exito');
           $("#modalNewMachine").modal("show");
         });
-      }
+      // }
     } else {
       alert('Datos inválidos, favor de revisar la información')
     }
@@ -173,14 +148,14 @@ export class MachinesComponent implements OnInit {
   // * Actualizacion de camión en la base de datos
   onEditTruck(uid: any) {
     if (this.trucksForm.valid) {
-      let configVersion = this.trucksForm.value.configVersion.split('-');
-      let numero = +configVersion[1].match(/(\d+)/g)
-      let letra: any = new String(configVersion[1].match(/([a-zA-Z ]+)/g)).codePointAt(0)
-      if ((letra + 1) === 91) {
-        letra = 65;
-        numero += 1;
-      } else { letra += 1; }
-      this.trucksForm.value.configVersion = '' + configVersion[0] + '-' + numero + String.fromCodePoint(letra)
+      // let configVersion = this.trucksForm.value.configVersion.split('-');
+      // let numero = +configVersion[1].match(/(\d+)/g)
+      // let letra: any = new String(configVersion[1].match(/([a-zA-Z ]+)/g)).codePointAt(0)
+      // if ((letra + 1) === 91) {
+      //   letra = 65;
+      //   numero += 1;
+      // } else { letra += 1; }
+      // this.trucksForm.value.configVersion = '' + configVersion[0] + '-' + numero + String.fromCodePoint(letra)
       if (this.trucksForm.value.tMax < this.trucksForm.value.tMin) {
         alert('Temperatura minima no puedes er mayo a maxima');
       } else if (this.trucksForm.value.pMax < this.trucksForm.value.pMin) {
@@ -232,15 +207,6 @@ export class MachinesComponent implements OnInit {
           });
         }
       }
-    });
-  }
-
-  // * Conexión con el socket
-  connectToSocket() {
-    const socket = io(environment.urlSocketIO);
-
-    socket.on('connect', () => {
-      console.log('Conectado al servidor', socket.id);
     });
   }
 

@@ -11,3 +11,40 @@
 .dark-mode textarea:-webkit-autofill:hover {
     -webkit-text-fill-color: black;
 }
+
+.font-bold{
+    font-weight: bold;
+}
+
+.btn-circle {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 2px 0px 1px 2px!important;
+    border-radius: 15px !important;
+    font-size: 10px !important;
+    text-align: center !important;
+}
+
+.btn-danger-circle {
+    width: 30px !important;
+    height: 30px !important;
+    padding: 0px 1.5px 0px 0px!important;
+    border-radius: 15px !important;
+    font-size: 10px !important;
+    text-align: center !important;
+}
+
+.img-confirm{
+    height: 100%;
+    width: 25%;
+}
+
+.center-btn{
+    text-align: center !important;
+}
+
+.alert-danger{
+    background-color: #F8D7DA !important;
+    border-color: #F5C6CB !important;
+    color: black !important;
+}

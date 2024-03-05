@@ -9,11 +9,10 @@
         <div class="container-fluid">
           <div class="row mb-2">
             <div class="col-sm-4">
-              <!-- <img src="/assets/img/fevid.png" alt="FEVID" style="width: 55%; padding-left: 6%;"> -->
             </div>
             <div class="col-sm-4" style="text-align-last: center;">
-              <title class="ng-binding">Bomba </title>
-              <h3 class="ng-binding"> Bomba </h3>
+              <title class="ng-binding">Locación </title>
+              <h3 class="ng-binding"> {{ tablaSensores?.camion?.Nombre }} - Base {{ baseNumber }} </h3>
             </div>
             <div class="col-sm-4">
               <ol class="breadcrumb float-sm-right">
@@ -26,83 +25,213 @@
         </div><!-- /.container-fluid -->
       </div>
       <section class="content">
-        <div class="row p-3">
-          <div class="col-6 ">
-            <div class="small-box  bg-info">
-              <div class="row inner pl-4">
-                <table>
-                  <tr>
-                    <td class="h6 font-weight-bold"> ID: </td>
-                    <td class="px-3 ng-binding"> {{tablaSensores.sensor?.id}} </td>
-                    <td class="h6 font-weight-bold"> Nombre del equipo:</td>
-                    <td class="px-3 ng-binding">{{truck.Nombre}} </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold"> Estatus de equipo: </td>
-                    <td class="px-3 ng-binding">{{tablaSensores.sensor?.estatus}} </td>
-                    <td class="h6 font-weight-bold"> Última hora de reporte:</td>
-                    <td class="px-3 ng-binding">{{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="h6 font-weight-bold"> Set point presión:</td>
-                    <td class="px-3 ng-binding"> {{truck.pSPoint}} psi </td>
-                    <td class="h6 font-weight-bold"> Set point temperatura:</td>
-                    <td class="px-3 ng-binding"> {{truck.tSPoint}} C° </td>
-                  </tr>
-                  <!-- <tr>
-                          <td class="h6"> Alarma</td>
-                          <td class="px-3 ng-binding"> </td>
-                          <td class="h6"> Estatus de conexión</td>
-                        </tr> -->
-                </table>
-              </div>
-              <div class="icon">
+        <div class="container-fluid">
+          <div class="row pb-2">
+            <div class="col-sm-5 col-md-6">
+              <div class="small-box  bg-info">
+                <div class="container p-2">
+                  <div class="row inner pl-2">
+                    <div class="col-6 font-weight-bold">ID: {{tablaSensores.sensor?.id}}</div>
+                    <div class="col-6 font-weight-bold">Nombre del equipo: {{truck.Nombre}}</div>
+                  </div>
+                  <div class="row inner pl-2">
+                    <div class="col-6 font-weight-bold">Estatus de equipo: {{tablaSensores.sensor?.plc_st}}</div>
+                    <div class="col-6 font-weight-bold">Última hora de reporte:
+                      {{timestampToDate(tablaSensores.sensor?.creacionRegistro.seconds)}}</div>
+                  </div>
+                </div>
+                <div class="icon">
+                </div>
               </div>
             </div>
-            <div class="row">
-              <div class="col-12">
-                <h4>Generar reporte de registros de la maquina: {{ tablaSensores.sensor?.id }}</h4>
-                <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
-                  <div class="row">
-                    <div class="col-12 col-lg-6">
-                      <label for="initDate">Fecha de inicio</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="initDate" formControlName="initDate">
-                    </div>
-                    <div class="col-12 col-lg-6">
-                      <label for="finishDate">Fecha de termino</label>
-                      <input type="date" class="p-invalid input-group-append form-control" id="finishDate" formControlName="finishDate">
-                    </div>
-                  </div>
-                  <div class="row pt-2">
-                    <div class="col-12 text-center">
-                      <button class="btn btn-primary" type="submit">Generar reporte</button>
-                    </div>
-                  </div>
-                </form>
+            <div class="col-sm-5 col-md-2">
+              <div class="small-box p-2" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
+                <div class="inner">
+                  FT/SEC: {{tablaSensores.sensor?.ftmin| number: '1.1-2'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-5 col-md-2">
+              <div class="small-box p-2" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
+                <div class="inner">
+                  RPM: {{tablaSensores.sensor?.rpm| number: '1.1-2'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-5 col-md-2 pointer">
+              <div class="p-3 bg-primary border-radius" data-toggle="modal" data-target="#generateReportModal"
+                style="text-align: center;">
+                Generar reporte
               </div>
             </div>
           </div>
-          <div class="col-6">
-            <div class="row">
-              <div class="col-12 col-lg-6">
-                <div class="small-box" [ngClass]="getTempBgColor()" data-toggle="modal" data-target="#modalList">
-                  <div class="inner">
-                    <h4> Temperatura: {{tablaSensores.sensor?.a2| number: '1.1-2'}} C°</h4>
+          <div class="row">
+            <div class="col-12 col-md-3 col-lg-3">
+              <div class="card">
+                <div class="card-body p-2">
+                  <div class="col-12 text-center">
+                    <h3>Silo 1</h3>
+                  </div>
+                  <div class="row mb-1">
+                    <div class="col-5">Estatus: {{tablaSensores.sensor?.st_s1}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'CLOSED'">
+                      <button (click)="openAlertConfirm(1)" id="playS1" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS1"><i class="fas fa-play"></i>
+                      </button>
+                    </div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s1 == 'OPEN'">
+                      <button id="stopS1" class="btn btn-danger-circle btn-danger" (click)="closedSilo(1)"
+                        [disabled]="deshabilitarBotonStopS1"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="col-12">
+                      <div class="slidecontainerS1 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange1"
+                          [(ngModel)]="sliderValue1" (ngModelChange)="onInputChange1($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-8 pt-3" id="sliderText1">
+                              <p>Porcentaje de apertura: <span id="demo">{{ sliderValue1 }}%</span></p>
+                            </div>
+                            <div class="col-4 pt-2" id="sliderButton1">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(1)">Actualizar </button>
+                            </div>
+                            <div id="contenedor1" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                              <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div class="col-12 col-lg-6">
-                <div class="small-box" [ngClass]="getPressBgColor()" data-toggle="modal" data-target="#modalList">
-                  <div class="inner">
-                    <h4> Presión: {{tablaSensores.sensor?.a1| number: '1.1-2'}} psi </h4>
+            </div>
+            <div class="col-12 col-md-3 col-lg-3">
+              <div class="card">
+                <div class="car-body p-2">
+                  <div class="col-12 text-center">
+                    <h3>Silo 2</h3>
                   </div>
-                  <h4></h4>
+                  <div class="row mb-1">
+                    <div class="col-5">Estatus: {{tablaSensores.sensor?.st_s2}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'CLOSED'">
+                      <button (click)="openAlertConfirm(2)" id="playS2" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS2">
+                        <i class="fas fa-play"></i>
+                      </button>
+                    </div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s2 == 'OPEN'">
+                      <button id="stopS2" class="btn btn-danger-circle btn-danger" (click)="closedSilo(2)"
+                        [disabled]="deshabilitarBotonStopS2"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="col-12">
+                      <div class="slidecontainerS2 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange2"
+                          [(ngModel)]="sliderValue2" (ngModelChange)="onInputChange2($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-8 pt-3" id="sliderText2">
+                              <p>Porcentaje de apertura: <span id="demo">{{ sliderValue2 }}%</span></p>
+                            </div>
+                            <div class="col-4 pt-2" id="sliderButton2">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(2)">Actualizar</button>
+                            </div>
+                            <div id="contenedor2" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                              <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3 col-lg-3">
+              <div class="card">
+                <div class="card-body p-2">
+                  <div class="col-12 text-center">
+                    <h3>Silo 3</h3>
+                  </div>
+                  <div class="row mb-1">
+                    <div class="col-5">Estatus: {{tablaSensores.sensor?.st_s3}}</div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'CLOSED'">
+                      <button (click)="openAlertConfirm(3)" id="playS3" class="btn btn-success btn-circle"
+                        data-toggle="modal" [disabled]="deshabilitarBotonS3"><i class="fas fa-play"></i>
+                      </button>
+                    </div>
+                    <div class="col-3" *ngIf="tablaSensores.sensor?.st_s3 == 'OPEN'">
+                      <button id="stopS3" class="btn btn-danger-circle btn-danger" (click)="closedSilo(3)"
+                        [disabled]="deshabilitarBotonStopS3"><i class="fas fa-stop"></i></button>
+                    </div>
+                    <div class="col-12">
+                      <div class="slidecontainerS3 mt-2">
+                        <input type="range" min="0" max="100" value="50" class="slider" id="myRange3"
+                          [(ngModel)]="sliderValue3" (ngModelChange)="onInputChange3($event)">
+                        <div class="contain">
+                          <div class="row">
+                            <div class="col-8 pt-3" id="sliderText3">
+                              <p>Porcentaje de apertura: <span id="demo">{{ sliderValue3 }}%</span></p>
+                            </div>
+                            <div class="col-4 pt-2" id="sliderButton3">
+                              <button id="updatePercentage" class="btn btn-success btn-sm" data-toggle="modal"
+                                data-target="#modalUpdate" (click)="setNumberSilo(3)">Actualizar</button>
+                            </div>
+                            <div id="contenedor3" class="col-12 d-none" style="background-color: #454D55 !important;">
+                              <div class="contenedor-loader">
+                                <div class="loader1"></div>
+                                <div class="loader2"></div>
+                                <div class="loader3"></div>
+                                <div class="loader4"></div>
+                              </div>
+                              <div class="cargando">Actualizando porcentaje...</div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 col-md-3 col-lg-3">
+              <div class="card">
+                <div class="card-body p-2">
+                  <div class="col-12 text-center">
+                    <h3>Conveyor</h3>
+                  </div>
+                  <div class="row mb-5 mt-5">
+                    <div class="col-5 ml-5">Estatus: {{tablaSensores.sensor?.bands}}</div>
+                    <div class="col-3 pl-2 ml-5" *ngIf="tablaSensores.sensor?.bands == 'STOPPED'">
+                      <button class="btn btn-success btn-circle" (click)="runBand()" [disabled]="deshabilitarBotonC"><i
+                          class="fas fa-play"></i></button>
+                    </div>
+                    <div class="col-3 pl-2 ml-5" *ngIf="tablaSensores.sensor?.bands == 'RUNNING'">
+                      <button class="btn btn-danger-circle btn-danger" (click)="stoppedBand()"
+                        [disabled]="deshabilitarBotonStopC"><i class="fas fa-stop"></i></button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+      
         <div class="col-lg-12">
           <div class="card card-teal">
             <div class="card-header" id="accordionGraficaBom" data-toggle="collapse" data-target="#graficaBom"
@@ -123,6 +252,106 @@
           </div> <!-- /.card -->
         </div><!-- /.col -->
       </section><!-- /.content -->
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalAlert" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-12" style="text-align: center !important;">
+                <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
+              </div>
+              <div class="col-12" style="padding-left:20%; padding-right: 20%;">
+                <h5>¿Seguro de abrir el silo {{numberSilo}}?</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="no-border center-btn mb-3">
+          <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success ml-4" (click)="openSilo(numberSilo)">Si, abrir silo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalUpdate" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="container">
+            <div class="row">
+              <div class="col-12" style="text-align: center !important;">
+                <img class="img-confirm" src="/assets/img/confirmChanges.png" alt="">
+              </div>
+              <div class="col-12" style="padding-left:0%; padding-right: 0%;">
+                <h5>¿Seguro de actualizar el porcentaje de apertura?</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="no-border center-btn mb-3">
+          <button type="button" class="btn btn-secondary mr-4" data-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success ml-4" (click)="updatePercentage()">Si, actualizar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="generateReportModal" data-backdrop="static" tabindex="-1"
+    aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Generar reporte de la tablilla: {{ tablaSensores.sensor?.id }}
+          </h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-12" id="fornDownloadReport">
+              <form [formGroup]="reportForm" (ngSubmit)="generateReport()">
+                <div class="row">
+                  <div class="col-12 col-lg-6">
+                    <label for="initDate">Fecha de inicio</label>
+                    <input type="date" class="p-invalid input-group-append form-control" id="initDate"
+                      formControlName="initDate">
+                  </div>
+                  <div class="col-12 col-lg-6">
+                    <label for="finishDate">Fecha de termino</label>
+                    <input type="date" class="p-invalid input-group-append form-control" id="finishDate"
+                      formControlName="finishDate">
+                  </div>
+                </div>
+                <div class="row pt-2">
+                  <div class="col-12 text-center">
+                  </div>
+                </div>
+                <div class="modal-footer mt-4">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                  <button class="btn btn-primary" type="submit">Generar reporte</button>
+                </div>
+              </form>
+            </div>
+            <div id="contenedor" class="col-12 d-none">
+              <div class="contenedor-loader">
+                <div class="loader1"></div>
+                <div class="loader2"></div>
+                <div class="loader3"></div>
+                <div class="loader4"></div>
+              </div>
+              <div class="cargando">Descargando reporte...</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
   <app-footer></app-footer>

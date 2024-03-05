@@ -17,6 +17,11 @@ const aws_crt = require('aws-crt');
 const iot = aws_crt.iot;
 const mqtt_crt = aws_crt.mqtt;
 
+// * Modelo de datos del quectel
+const { saveDataPLC } = require('../models/plcModel');
+
+let tempBoards = {};
+
 const iotCoreServer = async () => {
     const decoder = new TextDecoder('utf-8');
 
@@ -52,7 +57,7 @@ const iotCoreServer = async () => {
         // * Método para escuchar los mensajes de los clientes
         socket.on(topics[0], async (message) => {
             console.log("Received from web", message);
-            
+
             // * Se notifica a los tablillas
             await connection.publish(topics[3], message, mqtt.QoS.AtLeastOnce);
             console.log("Message sent to boards");
@@ -64,11 +69,80 @@ const iotCoreServer = async () => {
         const data = JSON.parse(decoder.decode(payload));
         console.log("Received from", topic, data);
 
-        // ! Aquí se debe de mandar a guardar a la base de datos
+        // ! Parche por error de Firmware
+        // data.st_s1 = data.st_s1.toUpperCase();
+        // data.st_s2 = data.st_s2.toUpperCase();
+        // data.st_s3 = data.st_s3.toUpperCase();
 
+        if (tempBoards[data.idBoard] === undefined) {
+            console.log('New data from board, saving');
+            tempBoards[data.idBoard] = data;
+            // * Se guarda en la base de datos
+            await saveDataPLC(data);
+            // * Se notifica a la webs
+            io.emit(topics[2], data);
+            return;
+        }
+
+        if (JSON.stringify(tempBoards[data.idBoard]) === JSON.stringify(data)) {
+            console.log('The data is the same, nothing saved');
+            return;
+        }
+
+        console.log('The data is different, saving new data');
+        tempBoards[data.idBoard] = data;
+        // * Se guarda en la base de datos
+        await saveDataPLC(data);
         // * Se notifica a la webs
         io.emit(topics[2], data);
     });
+
+    /*setInterval(async () => {
+        console.log('Sending random data');
+        let r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        let r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+
+        let data = {
+            id: "eth_iot_0001-pid",
+            type: "status",                // status" --> all variables status
+            plc_st: "PLUGGED",             // PLUGGED" --> PLC is plugged to board, "UNPLUGGED" --> PLC is unplugged
+            plc_conn: true,                // rue --> board is connected to modbus PLC correctly, false -> modbus error
+            ftmin: 0,              // ands speeed in ft/min 
+            rpm: 0,                // ands speed in RPM´s
+            bands: "STOPPED",           // RUNNING" --> bands are running, "STOPPED" --> bands are stopped
+            st_s1: "CLOSED",             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
+            st_s2: "CLOSED",           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
+            st_s3: "CLOSED",           // OPEN" --> silo 3 is open, "CLOSED" --> silo 3 is closed
+            p_s1: 0,             // OPEN" --> silo 1 is open, "CLOSED" --> silo 1 is closed
+            p_s2: 0,           // OPEN" --> silo 2 is open, "CLOSED" --> silo 2 is closed
+            p_s3: 0,  
+            mtto: "OFF",             // OFF" --> alert not triggered, "ON" --> alert triggered
+            al_1: "OK"
+        };
+
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.id = "eth_iot_0001-pid";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.id = "eth_iot_0002-pid";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
+        await saveDataPLC(data);
+
+        r_ftMin = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        r_RPM = Math.floor(Math.random() * (10000 - 0 + 1)) + 0;
+        data.id = "eth_iot_0003-pid";
+        data.ftmin = r_ftMin;
+        data.rpm = r_RPM;
+        await saveDataPLC(data);
+    }, 5000);*/
 };
 
 module.exports = {

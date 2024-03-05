@@ -29,53 +29,44 @@ export class DashboardComponent implements OnInit {
     showSearch: true,
     showData: [5, 10, 15, 20, 25],
     headerRow: [{
-      text: 'ID',
-      show: false
-    }, {
-      text: 'Nombre',
+      text: 'ID sensor',
       show: true
     }, {
-      text: 'Estatus',
+      text: 'Locación',
       show: true
     }, {
-      text: 'Última hora de reporte',
+      text: 'Velocidad banda underbin en ft/sec',
       show: true
     }, {
-      text: 'Set point presión',
+      text: 'Velocidad banda underbin RPM',
       show: true
     }, {
-      text: 'minPressure',
-      show: false
-    }, {
-      text: 'maxPressure',
-      show: false
-    }, {
-      text: 'Presión',
+      text: 'Indicador silo 1 abierto en modo manual',
       show: true
     }, {
-      text: 'Pico de presión',
+      text: 'Indicador silo 2 abierto en modo manual',
       show: true
     }, {
-      text: 'Temperatura',
+      text: 'Indicador silo 3 abierto en modo manual',
       show: true
     }, {
-      text: 'Pico de temperatura',
+      text: 'Indicador bandas encendidas',
       show: true
     }, {
-      text: 'Set point temperatura',
+      text: 'Alerta mantenimento banda, horas cumplidas',
       show: true
     }, {
-      text: 'minTemp',
-      show: false
+      text: 'Alarma del RPM',
+      show: true
     }, {
-      text: 'maxTemp',
-      show: false
+      text: 'Posición Silo 1',
+      show: true
     }, {
-      text: 'Alarma',
-      show: false
+      text: 'Posición Silo 2',
+      show: true
     }, {
-      text: 'Comentario',
-      show: false
+      text: 'Posición Silo 3',
+      show: true
     }],
     buttons: {
       detail: {
@@ -116,10 +107,13 @@ export class DashboardComponent implements OnInit {
         this.tablaSensores = [];
         this.contDeviceActive = 0;
         this.contDeviceNotActive = 0;
-        this.tableFill(camionn);
+        
+        for (let i = 0; i < camionn.idBoards.length; i++) {
+          this.tableFill(camionn, camionn.idBoards[i]);
+        }
       });
     });
-    this.timerHora();
+    //this.timerHora();
   }
 
   timestampToDate(fecha: any) {
@@ -128,18 +122,19 @@ export class DashboardComponent implements OnInit {
   }
 
   detalle(data: any) {
-    this.router.navigate(['/bomb-detail/' + data.id]);
+    this.router.navigate(['/bomb-detail/' + data.idsensor]);
   }
 
-  private tableFill(camionn: any) {
-    this.service.getData('quectel', camionn.IDSensor).subscribe(dataSensor => {
+  private tableFill(camionn: any, idBoard: string) {
+    this.service.getData('quectel', idBoard).subscribe(dataSensor => {
       // * Si el camion esta asignado a un sensor se agrega al arreglo de sensores
       dataSensor.map(sensor => {
         let data: any = sensor.payload.doc.data();
-        let objeto = this.tablaSensores.find((el: { IdSensor: any; }) => el.IdSensor == data.id);
-        if (this.tablaSensores.indexOf(objeto) == -1) {
+        let objeto = this.tablaSensores.find((el: any) => idBoard == el.IdSensor);
+
+        if (this.tablaSensores.indexOf(objeto) === -1) {
           this.tablaSensores.push({
-            IdSensor: camionn.IDSensor,
+            IdSensor: idBoard,
             sensor: data,
             camion: camionn
           });
@@ -158,31 +153,26 @@ export class DashboardComponent implements OnInit {
       this.contDevicePause = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'En Pausa').length;
       this.contDeviceInactive = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'Inactivo').length;
       this.contDeviceOff = this.tablaSensores.filter((el: { sensor: { estatus: string }; }) => el.sensor.estatus === 'Apagado').length;
-
+      console.log("DATA TABLE", this.tablaSensores);
+      
       // * Llenamos la tabla con los datos
       this.tablaSensores.forEach((data: any) => {
         this.dataRows.push([
           data.sensor.id,
           data.camion.Nombre,
-          data.sensor.estatus,
-          this.timestampToDate(data.sensor.creacionRegistro.seconds),
-          data.camion.pSPoint + ' psi',
-          data.camion.pMin,
-          data.camion.pMax,
-
-          this.numberFormat(parseFloat(data.sensor.a1)) + ' psi',
-          this.numberFormat(parseFloat(data.sensor.m1)) + ' psi',
-
-          this.numberFormat(parseFloat(data.sensor.a2)) + ' ºC',
-          this.numberFormat(parseFloat(data.sensor.m2)) + ' ºC',
-
-          data.camion.tSPoint + ' ºC',
-          data.camion.tMin,
-          data.camion.tMax,
-          '-----', '-----'
+          data.sensor.ftmin,
+          data.sensor.rpm,
+          data.sensor.st_s1,
+          data.sensor.st_s2,
+          data.sensor.st_s3,
+          data.sensor.bands,
+          data.sensor.mtto,
+          data.sensor.al_1,
+          data.sensor.p_s1,
+          data.sensor.p_s2,
+          data.sensor.p_s3,
         ]);
       });
-
 
       // * Mostramos el mapa y tabla de sensores
       this.showComponents = true;

@@ -1,0 +1,26 @@
+#* Stage 1 *#
+FROM node:14.17.5 as buildFront
+
+#* create the directory inside the container
+WORKDIR /usr/src/app
+
+#* copy package.json and package-lock.json to the container
+COPY ./package*.json .
+
+#* install dependencies
+RUN npm ci && npm install -g @angular/cli@13.0.0
+
+#* copy the generated modules and all other files to the container
+COPY . .
+
+RUN npm run build
+
+#* Stage 2 *#
+FROM nginx:stable-alpine
+
+#* Copy the build output to replace the default nginx contents.
+COPY --from=buildFront /usr/src/app/dist/kinill-cm /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+
+#* Expose port 80
+EXPOSE 80
