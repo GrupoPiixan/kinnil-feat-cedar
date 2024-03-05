@@ -42,6 +42,7 @@ export class AuthService {
       // * Iniciar sesion en el servicio de Firebase
       this.afAuth.signInWithEmailAndPassword(email, password).then((user) => {
         if (user) {
+          var userString = JSON.stringify(user);
           // * Recargamos la página para redireccionar al dashboard
           window.location.reload();
         }
