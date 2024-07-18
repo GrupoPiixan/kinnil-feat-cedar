@@ -11,4 +11,6 @@ export const environment = {
   },
   urlAPIServer: "http://68.183.26.55:8080/api",
   urlSocketIO: "http://68.183.26.55:3005",
+  urlNotifications: "https://notify.kinnil.com/api",
+  apiKeyNotifications: "1e57a452a094728c291bc42bf2bc7eb8d9fd8844d1369da2bf728588b46c4e75"
 };

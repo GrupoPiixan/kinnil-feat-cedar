@@ -88,4 +88,8 @@ export class UsersService {
     });
   }
 
+  getAllUsersWithNotificationsEnabled() {
+    return this.afs.collection('usuarios', ref => ref.where('notify', '==', true)).get();
+  }
+
 }

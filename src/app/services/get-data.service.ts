@@ -1,4 +1,7 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+
+import { environment } from '../../environments/environment';
 
 // * Firebase
 import { AngularFirestore } from '@angular/fire/compat/firestore';
@@ -8,7 +11,12 @@ import { AngularFirestore } from '@angular/fire/compat/firestore';
 })
 export class GetDataService {
 
-  constructor(private afs: AngularFirestore) { }
+  private headerOptions: any;
+
+  constructor(
+    private http: HttpClient,
+    private afs: AngularFirestore
+  ) { }
 
   getData(collection: string, id: string) {
     return this.afs.collection(collection, ref => ref.where('id', '==', id).orderBy('creacionRegistro', 'desc').limit(1)).snapshotChanges();
@@ -50,6 +58,16 @@ export class GetDataService {
 
   async generateReport(initDate: string, finishDate: string) {
     return this.afs.collection('quectel', ref => ref.where("creacionRegistro", ">=", new Date(`${initDate} 00:00:00`)).where("creacionRegistro", "<=", new Date(`${finishDate} 23:59:59`))).get();
+  }
+
+  async generateNotification(notification: any) {
+    return this.http.post(`${environment.urlNotifications}/notification/sendNotification`, notification, {
+        headers: new HttpHeaders({
+          'Content-Type': 'application/json',
+          'authorization': environment.apiKeyNotifications
+        })
+      }
+    ).toPromise();
   }
 
   async createLog(log: any){

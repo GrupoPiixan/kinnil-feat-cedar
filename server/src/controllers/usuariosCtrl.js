@@ -42,28 +42,26 @@ const saveUser = async (req = request, res = response) => {
 
 const updateUser = async (req = request, res = response) => {
   // * Obtenemos los datos del usuario de la petición
-  const { userName, email, telephone, uid } = req.body;
+  const { email, uid } = req.body;
+  delete req.body.token;
 
   try {
     // * Verificamos que el correo no sea el mismo
     if (email !== "iguales") {
+      delete req.body.uid;
+
       // * Actualizamos los datos del usuario
-      await firebase.db.doc(`/usuarios/${uid}`).update({
-        userName,
-        email,
-        telephone,
-      });
+      await firebase.db.doc(`/usuarios/${uid}`).update(req.body);
 
       // * Actualizamos las credenciales del usuario
       await firebase.auth.updateUser(uid, {
         email,
       });
     } else {
+      delete req.body.uid;
+      delete req.body.email;
       // * Actualizamos los datos del usuario
-      await firebase.db.doc(`/usuarios/${uid}`).update({
-        userName,
-        telephone,
-      });
+      await firebase.db.doc(`/usuarios/${uid}`).update(req.body);
     }
 
     // * Enviamos una respuesta al cliente
