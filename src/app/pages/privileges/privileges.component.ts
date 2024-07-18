@@ -46,6 +46,10 @@ export class PrivilegesComponent implements OnInit {
       userName: new FormControl('', [Validators.required, Validators.maxLength(17), this.removeSpaces]),
       email: new FormControl('', [Validators.required, Validators.email, this.removeSpaces]),
       telephone: new FormControl('', [Validators.required, Validators.minLength(10), Validators.maxLength(10)]),
+      telegramNotify: new FormControl(false, []),
+      telegramChatID: new FormControl('', []),
+      emailNotify: new FormControl(false, []),
+      smsNotify: new FormControl(false, []),
     });
   
     constructor(private userServ: UsersService,
@@ -69,6 +73,11 @@ export class PrivilegesComponent implements OnInit {
     // * Crear nuevo usuario
     createUser(): void {
       const { password, confirmPassword, telephone, noEmployee, email } = this.newUserForm.value;
+
+      this.newUserForm.value.telegramNotify = false;
+      this.newUserForm.value.telegramChatID = '';
+      this.newUserForm.value.emailNotify = false;
+      this.newUserForm.value.smsNotify = false;
   
       // * Validar que las contraseñas coincidan
       if (this.newUserForm.valid && (password === confirmPassword)) {
@@ -109,27 +118,56 @@ export class PrivilegesComponent implements OnInit {
   
     // * Mostrar informacion de un usuario en un modal
     initModalEditUser(user: any): void {
+      console.log(user);
+
       // * Guardamos el usuario en un objeto
       this.userEdit.username = user.data.userName;
       this.userEdit.email = user.data.email;
       this.userEdit.telephone = user.data.telephone;
       this.userEdit.uid = user.uid;
+      this.userEdit.telegramNotify = user.data.telegramNotify || false;
+      this.userEdit.telegramChatID = user.data.telegramChatID || '';
+      this.userEdit.emailNotify = user.data.emailNotify || false;
+      this.userEdit.smsNotify = user.data.smsNotify || false;
   
       this.userEdit2.username = user.data.userName;
       this.userEdit2.email = user.data.email;
       this.userEdit2.telephone = user.data.telephone;
       this.userEdit2.uid = user.uid;
+      this.userEdit2.telegramNotify = user.data.telegramNotify || false;
+      this.userEdit2.telegramChatID = user.data.telegramChatID || '';
+      this.userEdit2.emailNotify = user.data.emailNotify || false;
+      this.userEdit2.smsNotify = user.data.smsNotify || false;
   
       // * Inicializamos el formulario
       this.editUserForm.value.userName = user.data.userName;
       this.editUserForm.value.email = user.data.email;
       this.editUserForm.value.telephone = user.data.telephone;
+      this.editUserForm.value.telegramNotify = user.data.telegramNotify || false;
+      this.editUserForm.value.telegramChatID = user.data.telegramChatID || '';
+      this.editUserForm.value.emailNotify = user.data.emailNotify || false;
+      this.editUserForm.value.smsNotify = user.data.smsNotify || false;
+
+      this.addValidationTelegramChatID();
+    }
+
+    addValidationTelegramChatID(): void {
+      if (this.userEdit.telegramNotify) {
+        this.editUserForm.controls['telegramChatID'].setValidators([Validators.required]);
+      } else {
+        this.editUserForm.controls['telegramChatID'].setErrors(null);
+      }
     }
   
     // * Editar usuario
     editUser(): void {
       const { telephone, email } = this.editUserForm.value;
       if (this.editUserForm.valid && confirm('¿Está seguro de que desea modificar este usuario?')) {
+        const { telegramNotify, emailNotify, smsNotify } = this.editUserForm.value;
+        
+        // * Verificamos si alguno de los campos de notificación esta activo
+        this.editUserForm.value.notify = (telegramNotify || emailNotify || smsNotify);
+
         this.userServ.updateUser(this.userEdit2, this.editUserForm.value).subscribe((res: any) => {
           if (res.errors === undefined) {
             alert(res.msg);

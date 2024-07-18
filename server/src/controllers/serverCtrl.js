@@ -36,7 +36,7 @@ class Server {
 
     // * Método para inicializar los controladores que no usen rutas
     controllers() {
-        require('../controllers/truckAlertsCtrl');
+        //require('../controllers/truckAlertsCtrl');
     }
 
     // * Método para inicializar el log

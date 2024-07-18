@@ -7,8 +7,9 @@ import { environment } from '../../../environments/environment';
 
 // * Service
 import { GetDataService } from 'src/app/services/get-data.service';
+import { UsersService } from '../../services/users.service';
 
-// * Declaramos la variable para tener acceso a la libreria de socketIO
+// * Declaramos la variable para tener acceso a la librería de socketIO
 declare const io: any;
 
 // * Variable for SheetJS
@@ -29,12 +30,12 @@ export class BombDetailComponent implements OnInit {
   numberSilo: number = 0;
   setSilo: number = 0;
 
+  allUsersWithNotificationsEnabled: any[] = [];
+
   onInputChange1(event: any) {
     this.sliderValue1 = event.target.value;
   }
   onInputChange2(event: any) {
-    console.log("evento", event);
-
     this.sliderValue2 = event.target.value;
   }
   onInputChange3(event: any) {
@@ -76,7 +77,7 @@ export class BombDetailComponent implements OnInit {
   categorias: any = [];
   //  chartOptions: Highcharts.Options = { }
 
-  timeTimeout: number = 5000;
+  timeTimeout: number = 10000;
 
   // * Variables para grafica con zoom
   public primaryXAxis: any;
@@ -116,20 +117,26 @@ export class BombDetailComponent implements OnInit {
   userIP: any;
   user: any;
 
-  constructor(private route: ActivatedRoute, private service: GetDataService, private datePipe: DatePipe) {
+  constructor(
+    private route: ActivatedRoute,
+    private service: GetDataService,
+    private datePipe: DatePipe,
+    private usersService: UsersService
+  ) {
     const hoy = new Date();
     const dia = hoy.getDate()
     const mes = hoy.getMonth();
     const anio = hoy.getFullYear();
     this.fecha_Rango = new Date(anio, mes, dia);
     this.fecha = new Date(anio, mes, dia);
-    this.fecha.setDate(this.fecha.getDate() + 1)
+    this.fecha.setDate(this.fecha.getDate() + 1);
   }
 
   ngOnInit(): void {
     this.user = JSON.parse(localStorage.getItem("Usuario") || '{}');
-    console.log("Usuarios", this.user);
     this.uid = this.route.snapshot.paramMap.get("uid") || '';
+
+    this.getAllUsersWithNotificationsEnabled();
 
     this.service.getData('quectel', this.uid).subscribe(dataSensor => {
       dataSensor.map(sensor => {
@@ -145,11 +152,11 @@ export class BombDetailComponent implements OnInit {
             }
             this.selectSlider();
             this.lockButtons();
-
           });
         });
       });
     });
+
     this.initSocketIO();
   }
 
@@ -266,26 +273,6 @@ export class BombDetailComponent implements OnInit {
 
     this.socket.on('connect', () => {
     });
-
-    // TODO: mandar a prender o apagar una banda (conveyor)
-    /*this.socket.emit('web_to_server', {
-      "board_id": this.uid,
-      "type": "write",
-      "bands": "run | stop"
-    });*/
-
-    // TODO: mandar a abrir un silo
-    /*this.socket.emit('web_to_server', {
-      "board_id": this.uid,
-      "silo": 1,
-      "value": "OPEN | CLOSE"
-    });*/
-
-    // TODO: mandar a solicitar una lectura a la tablilla
-    /*this.socket.emit('web_to_server', {
-      "board_id": this.uid,
-      "type": "write",
-    });*/
   }
 
   // * Methods to run or stop a belt and to open or close a silo
@@ -489,33 +476,70 @@ export class BombDetailComponent implements OnInit {
   // * Method to create logs
   async createLog(action: string, equipment: string, percentage: any) {
     this.userIP = (await this.getIP()).ip;
-    var logs = {
+
+    const infoUser = await this.getInfo(this.userIP);
+
+    const logs = {
       uidUser: this.user.uid,
       role: this.user.role,
       userName: this.user.userName,
       email: this.user.email,
       ip: this.userIP,
-      city: (await this.getInfo(this.userIP)).city,
-      region: (await this.getInfo(this.userIP)).region,
-      latitud: (await this.getInfo(this.userIP)).latitude,
-      longitud: (await this.getInfo(this.userIP)).longitude,
-      country: (await this.getInfo(this.userIP)).country,
-      country_code: (await this.getInfo(this.userIP)).country_code,
-      oraganization: (await this.getInfo(this.userIP)).org,
+      city: infoUser.city,
+      region: infoUser.region,
+      latitud: infoUser.latitude,
+      longitud: infoUser.longitude,
+      country: infoUser.country,
+      country_code: infoUser.country_code,
+      oraganization: infoUser.org,
       dateRegister: new Date().toISOString().split('T')[0],
       hourRegister: this.getCurrentTime(),
       action: action,
       equipment: equipment,
       percentage: percentage
+    };
+
+    // * Save log in database
+    await this.service.createLog(logs);
+
+    let restOfTheMessage = '';
+
+    // * Message to send to all users by email, sms and/or telegram
+    switch (action) {
+      case 'Abrir silo':
+        restOfTheMessage = `El usuario ${logs.userName} ha abierto el ${logs.equipment} al ${logs.percentage}% en ${this.tablaSensores?.camion?.Nombre} - Base ${this.baseNumber} en el sistema Kinnil Maxxim`;
+        break;
+      case 'Cerrar silo':
+        restOfTheMessage = `El usuario ${logs.userName} ha cerrado el ${logs.equipment} en ${this.tablaSensores?.camion?.Nombre} - Base ${this.baseNumber} en el sistema Kinnil Maxxim`;
+        break;
+      case 'Actualizar porcentaje de apertura':
+        restOfTheMessage = `El usuario ${logs.userName} ha actualizado el porcentaje de apertura del ${logs.equipment} al ${logs.percentage}% en ${this.tablaSensores?.camion?.Nombre} - Base ${this.baseNumber} en el sistema Kinnil Maxxim`;
+        break;
+      case 'Detener banda':
+        restOfTheMessage = `El usuario ${logs.userName} ha detenido la banda en ${this.tablaSensores?.camion?.Nombre} - Base ${this.baseNumber} en el sistema Kinnil Maxxim`;
+        break;
+      case 'Correr banda':
+        restOfTheMessage = `El usuario ${logs.userName} ha encendido la banda en ${this.tablaSensores?.camion?.Nombre} - Base ${this.baseNumber} en el sistema Kinnil Maxxim`;
+        break;
     }
 
-    this.service.createLog(logs).then(() => {
-      console.log('Log registrado con exito');
+    // * Send notification to all users by email, sms and/or telegram
+    this.allUsersWithNotificationsEnabled.map(async (user) => {
+      await this.service.generateNotification({
+          telegram: user.telegramNotify,
+          telegramChatId: user.telegramChatID,
+          telegramMessage: restOfTheMessage,
+      
+          sms: user.smsNotify,
+          smsNumber: Number(user.telephone),
+          smsMessage: restOfTheMessage,
+      
+          email: user.emailNotify,
+          emailTo: user.email,
+          emailSubject: "Kinnil Maxxim - Notification System",
+          emailMessage: restOfTheMessage
+      });
     });
-
-    console.log("JSON INFO", await this.getInfo(this.userIP));
-    console.log("JSON LOG", logs);
-
   }
 
   // * Locks all buttons when opening or closing a silo or running or stopping the conveyor
@@ -603,5 +627,13 @@ export class BombDetailComponent implements OnInit {
 
     // Devolvemos la hora en formato HH:MM:SS
     return `${horaFormateada}:${minutosFormateados}:${segundosFormateados}`;
+  }
+
+  getAllUsersWithNotificationsEnabled() {
+    this.usersService.getAllUsersWithNotificationsEnabled().subscribe(data => {
+      data.docs.map(user => {
+        this.allUsersWithNotificationsEnabled.push(user.data());
+      });
+    });
   }
 }
