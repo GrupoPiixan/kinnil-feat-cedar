@@ -9,8 +9,8 @@ export const environment = {
     appId: "1:212415381093:web:8977bcb7cdd2d2d95b908c",
     measurementId: "G-CGQVNQPGS9",
   },
-  urlAPIServer: "http://68.183.26.55:8080/api",
-  urlSocketIO: "http://68.183.26.55:3005",
+  urlAPIServer: "https://api.maxxim.kinnil.com/api",
+  urlSocketIO: "https://api.maxxim.kinnil.com",
   urlNotifications: "https://notify.kinnil.com/api",
   apiKeyNotifications: "1e57a452a094728c291bc42bf2bc7eb8d9fd8844d1369da2bf728588b46c4e75"
 };

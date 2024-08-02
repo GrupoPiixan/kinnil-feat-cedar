@@ -21,6 +21,8 @@ class Server {
         this.usuariosPath = '/api/usuarios';
         this.quectelPath = '/api/quectel';
 
+        this.path = __dirname + '/../views/';
+
         // * Middlewares
         this.middlewares();
 
@@ -63,6 +65,8 @@ class Server {
         this.app.use(this.usuariosPath, require('../routes/usuariosRoute'));
         //this.app.use(this.quectelPath, require('../routes/quectelRoute'));
         require('../routes/iotCoreRoute');
+
+        this.app.use(express.static(this.path));
     }
 
     // * Método para inicializar el servidor
