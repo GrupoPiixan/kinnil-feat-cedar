@@ -6,7 +6,7 @@ import { switchMap } from 'rxjs/operators';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import "firebase/auth";
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-
+import firebase from 'firebase/compat/app';
 // * Utils
 import { LocalStorageService } from '../utils/local-storage.service';
 import { jsonUtils } from '../utils/json-utils';
@@ -37,31 +37,39 @@ export class AuthService {
   }
 
   // * Iniciamos sesión
-  login(email: string, password: string): void {
+  async login(email: string, password: string): Promise<Boolean> {
     try {
       // * Iniciar sesion en el servicio de Firebase
-      this.afAuth.signInWithEmailAndPassword(email, password).then((user) => {
-        if (user) {
-          var userString = JSON.stringify(user);
-          // * Recargamos la página para redireccionar al dashboard
-          window.location.reload();
-        }
-      }).catch(error => {
-        // * Mostrar error si el servicio no funciona
-        switch (error.code) {
-          case 'auth/wrong-password':
-            window.alert('Error al intentar iniciar sesión');
-            break;
-          case 'auth/user-not-found':
-            window.alert('Este usuario no está registrado');
-            break;
-          default:
-            break;
-        }
-      });
+
+      let userCredential = await this.afAuth.signInWithEmailAndPassword(email, password)
+      const user = userCredential.user;
+      if (user?.multiFactor?.enrolledFactors.length) {
+        const resolver = user.multiFactor.getSession();
+        const phoneAuthProvider = new firebase.auth.PhoneAuthProvider();
+        const recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container');
+
+        const verificationId = await phoneAuthProvider.verifyPhoneNumber({
+          session: resolver,
+        }, recaptchaVerifier);
+
+        do {
+          const verificationCode = prompt('Ingrese el código de verificación enviado a su teléfono:');
+          if (verificationCode) {
+            const phoneCredential = firebase.auth.PhoneAuthProvider.credential(verificationId, verificationCode);
+            const assertion = firebase.auth.PhoneMultiFactorGenerator.assertion(phoneCredential);
+            await user.multiFactor.enroll(assertion);
+            return true;
+          }
+        } while (true);
+
+      } else {
+        return false
+      }
+
     } catch (err) {
       // * Mostrar error
       console.log('Catch login: ', err);
+      return false;
     }
   }
 
