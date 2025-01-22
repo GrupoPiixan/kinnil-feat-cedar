@@ -5,13 +5,13 @@
 export const environment = {
   production: false,
   firebase: {
-    apiKey: "AIzaSyDBphRG3xCoFlGqn2Xnku5p9_O0hrbNfgE",
-    authDomain: "kinnil-feat-cedar-pid.firebaseapp.com",
-    projectId: "kinnil-feat-cedar-pid",
-    storageBucket: "kinnil-feat-cedar-pid.appspot.com",
-    messagingSenderId: "808749870365",
-    appId: "1:808749870365:web:86cbc1597d3aa88db485f4",
-    measurementId: "G-3D3J0D4M0J"
+    apiKey: "AIzaSyDOuWdqJsDbbzEzat9iNZoGVoC8l_pL0PI",
+    authDomain: "kinnil-feat-cedar.firebaseapp.com",
+    projectId: "kinnil-feat-cedar",
+    storageBucket: "kinnil-feat-cedar.appspot.com",
+    messagingSenderId: "212415381093",
+    appId: "1:212415381093:web:8977bcb7cdd2d2d95b908c",
+    measurementId: "G-CGQVNQPGS9",
   },
   urlAPIServer: "http://localhost:8080/api",
   urlSocketIO: "http://localhost:3005",
