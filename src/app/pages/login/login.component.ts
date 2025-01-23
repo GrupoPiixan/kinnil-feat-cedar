@@ -1,6 +1,8 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
+import Swal from 'sweetalert2';
+
 import {
   multiFactor, PhoneAuthProvider, PhoneMultiFactorGenerator,
   RecaptchaVerifier, getAuth
@@ -15,6 +17,8 @@ import { AuthService } from '../../services/auth.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit, AfterViewInit {
+  showError: boolean = false;
+  errorMessage: string = '';
 
   // * Formulario de login
   loginForm = new FormGroup({
@@ -27,38 +31,62 @@ export class LoginComponent implements OnInit, AfterViewInit {
   emailRestore: string = '';
   private mfaModal: any;
   constructor(private authService: AuthService, private afAuth: AngularFireAuth) { }
-
   ngOnInit(): void { }
   ngAfterViewInit(): void {
-
-    // Inicializar el modal
     const modalElement = document.getElementById('mfaModal');
     if (modalElement) {
       this.mfaModal = new bootstrap.Modal(modalElement);
     }
   }
+  async showCustomPrompt(text: string) {
+    const { value: userInput } = await Swal.fire({
+      title: text,
+      input: 'text',
+      inputPlaceholder: 'Code',
+      showCancelButton: true,
+      confirmButtonText: 'Send',
+      cancelButtonText: 'Cancel',
+    });
+
+    if (userInput) {
+      return userInput;
+    } else {
+      return null
+    }
+  }
   async login(): Promise<void> {
-    const { email, password } = this.loginForm.value;
-    // Verificar si el formulario es valido
-    if (this.loginForm.valid) {
-      // Enviar datos al servicio de autenticacion
-      const login = await this.authService.login(email, password);
-      if (login) {
-        window.location.reload();
-      } else {
-        this.mfaModal.show();
+    try {
+      const { email, password } = this.loginForm.value;
+      if (this.loginForm.valid) {
+        const login = await this.authService.login(email, password);
+        switch (login) {
+          case 'Success': {
+            this.showError = false;
+            this.errorMessage = '';
+            window.location.reload();
+            break;
+          }
+          case 'MFA REQUIRED': {
+            this.mfaModal.show();
+            break;
+          }
+          default:
+            this.errorMessage = 'Wrong Password or User';
+            this.showError = true;
+            break;
+        }
+      } else if (this.loginForm.invalid) {
+        this.errorMessage = 'Please fill all the fields';
+        this.showError = true;
       }
-    } else if (this.loginForm.invalid) {
-      // * Mostrar mensaje de error si el formulario es invalido
-      window.alert('Por favor, ingrese un correo y una contraseña válidos.');
+    } catch (error: any) {
+      console.log(error.code);
     }
   }
 
   restorePassword(): void {
-    // * Enviar correo de recuperacion de contraseña
     if (this.emailRestore !== '') {
       this.authService.restorePassword(this.emailRestore);
-      // * Limpiamos el campo de correo despues de intentar enviar el correo
       let time = setTimeout(() => {
         this.emailRestore = '';
         clearTimeout(time);
@@ -66,52 +94,62 @@ export class LoginComponent implements OnInit, AfterViewInit {
     }
   }
   async enableMfa() {
-    const phoneNumber = this.MFAForm.value.tel;
-    if (!phoneNumber || !/^\+\d{10,15}$/.test(phoneNumber)) {
-      throw new Error('El número de teléfono debe estar en formato E.164 (ejemplo: +1234567890)');
-    }
-
-    const user = await this.afAuth.currentUser;
-    if (!user) {
-      alert('El usuario no está autenticado');
-      return;
-    }
-    const recaptchaParameters = {
-      size: 'invisible',
-      callback: (response: string) => {
-        console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+    try {
+      const phoneNumber = this.MFAForm.value.tel;
+      if (!phoneNumber || !/^\+\d{10,15}$/.test(phoneNumber)) {
+        throw new Error('The phone number must be in E.164 format (e.g., +1234567890). Please try again.');
       }
-    };
-    const auth = getAuth();
-    const recaptchaVerifier = new RecaptchaVerifier('recaptcha-container-id', recaptchaParameters, auth);
-    const multiFactorSession = await multiFactor(user).getSession()
-    const phoneInfoOptions = {
-      phoneNumber: phoneNumber,
-      session: multiFactorSession
-    };
 
-    const phoneAuthProvider = new PhoneAuthProvider(auth);
+      const user = await this.afAuth.currentUser;
+      if (!user) {
+        Swal.fire({
+          title: 'Error',
+          text: 'User not found',
+          icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
+        });
+        return;
+      }
+      const recaptchaParameters = {
+        size: 'invisible',
+        callback: (response: string) => {
+          console.log('reCAPTCHA solved, allow signInWithPhoneNumber.');
+        }
+      };
+      const auth = getAuth();
+      const recaptchaVerifier = new RecaptchaVerifier('recaptcha-container-id', recaptchaParameters, auth);
+      const multiFactorSession = await multiFactor(user).getSession()
+      const phoneInfoOptions = {
+        phoneNumber: phoneNumber,
+        session: multiFactorSession
+      };
 
-    // Send SMS verification code.
-    const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
-    console.log('verificationId', verificationId);
+      const phoneAuthProvider = new PhoneAuthProvider(auth);
 
-    // Ask user for the verification code.
-    const verificationCode = prompt('Ingrese el código de verificación que recibió por SMS:');
-    if (!verificationCode) {
-      throw new Error('El código de verificación es necesario');
+      // Send SMS verification code.
+      const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier);
+
+
+      // Ask user for the verification code.
+      const verificationCode = await this.showCustomPrompt("We have sent you a code, please enter it here");
+      if (!verificationCode) {
+        throw new Error('Verification code is null try again');
+      }
+      // Then:
+      const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
+      const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
+
+      const mfaDisplayName = 'Phone number';
+      await multiFactor(user).enroll(multiFactorAssertion, mfaDisplayName);
+      window.location.reload();
+
+    } catch (error: any) {
+      console.error("log err", error);
+      Swal.fire({
+        title: 'Error',
+        text: error.message,
+        icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
+      });
     }
-    // Then:
-    const cred = PhoneAuthProvider.credential(verificationId, verificationCode);
-    const multiFactorAssertion = PhoneMultiFactorGenerator.assertion(cred);
-
-    // Complete enrollment.
-    const mfaDisplayName = 'Phone number'; // Define the display name
-    return multiFactor(user).enroll(multiFactorAssertion, mfaDisplayName);
-
-
   }
-
-
 
 }

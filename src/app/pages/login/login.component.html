@@ -8,21 +8,22 @@
       <div class="illustration">
         <i class="fas fa-user-circle" style="color: white;"></i>
       </div>
-      <div class="form-group"><label style="color: white;">Usuario</label><input class="form-control" type="email"
-          formControlName="email" name="email" placeholder="nombre@ejemplo.com"
+      <div class="form-group"><label style="color: white;">Mail</label><input class="form-control" type="email"
+          formControlName="email" name="email" placeholder="name@example.com"
           style="border-radius: 20px;background: #343a40;border-style: solid;border-color: #0ddea1;color: white;">
-      </div><label style="color: white;">Contraseña</label>
-      <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Contraseña"
+      </div><label style="color: white;">Password</label>
+      <div class="form-group"><input class="form-control" type="password" name="password" placeholder="Password"
           formControlName="password"
           style="border-radius: 20px;background: #343a40;border-style: solid;border-color: #0ddea1;color: white;">
+        <p class="errorMessage" *ngIf="showError">{{errorMessage}}</p>
       </div>
       <div class="form-group">
         <button class="btn btn-primary btn-block" type="submit"
-          style="background: #343a40;color: #0ddea1;">Acceder&nbsp;<i class="fa fa-chevron-circle-right"></i>
+          style="background: #343a40;color: #0ddea1;">Login&nbsp;<i class="fa fa-chevron-circle-right"></i>
         </button>
       </div>
       <button class="btn btn-primary btn-block" type="button" data-toggle="modal" data-target="#exampleModal"
-        style="background: #343a40;color: #0ddea1;">¿Has olvidado tu contraseña?
+        style="background: #343a40;color: #0ddea1;">Forgot Password
       </button>
     </form>
   </section>
@@ -33,7 +34,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background: #343a40;">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="color: white;">Recuperar contraseña</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="color: white;">Recover Password</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -41,19 +42,19 @@
       <div class="modal-body">
         <div class="form-group">
           <div class="form-group">
-            <label style="color: white;">Correo a recuperar</label>
+            <label style="color: white;">Mail to recover</label>
             <input class="form-control" type="email" [(ngModel)]="emailRestore" name="email"
-              placeholder="nombre@ejemplo.com"
+              placeholder="name@example.com"
               style="border-radius: 20px;background: #343a40;border-style: solid;border-color: #0ddea1;color: white;">
           </div>
-          <small id="emailHelp" class="form-text text-muted">Si no recibe el correo de recuperación favor de esperar
-            unos minutos y volver a hacer la solicitud.</small>
+          <small id="emailHelp" class="form-text text-muted">If you do not receive the recovery email, please wait a few
+            minutes and try submitting the request again.</small>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary btn-block restorePasswordBtn" type="button" (click)="restorePassword()"
           style="background: #343a40;color: #0ddea1;">
-          Recuperar
+          Send
         </button>
       </div>
     </div>
@@ -64,7 +65,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background: #343a40;">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel" style="color: white;">Activar MFA</h5>
+        <h5 class="modal-title" id="exampleModalLabel" style="color: white;">MFA Activation</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -73,18 +74,22 @@
         <form id="formularioMFA" [formGroup]="MFAForm">
           <div class="form-group">
             <div class="form-group">
-              <label style="color: white;">Numero de telefono</label>
+              <label style="color: white;">Phone Number</label>
               <input class="form-control" type="text" name="tel" placeholder="+10000000000" formControlName="tel"
                 style="border-radius: 20px;background: #343a40;border-style: solid;border-color: #0ddea1;color: white;">
             </div>
-            <small id="emailHelp" class="form-text text-muted">activar mfa texto.</small>
+            <small id="emailHelp" class="form-text text-muted">We have detected that you do not have an MFA method set
+              up. Please provide a phone number so we can verify your identity.</small>
           </div>
         </form>
 
       </div>
       <div class="modal-footer">
         <div id="recaptcha-container-id"></div>
-        <button (click)="enableMfa()">Activar MFA</button>
+        <button class="btn btn-primary btn-block restorePasswordBtn" type="button" (click)="enableMfa()"
+          style="background: #343a40;color: #0ddea1;">
+          Send SMS
+        </button>
       </div>
     </div>
   </div>
