@@ -50,13 +50,15 @@ export class AuthService {
       showCancelButton: true,
       confirmButtonText: 'Send',
       cancelButtonText: 'Cancel',
+      didOpen: () => {
+        const input = Swal.getInput();
+        if (input) {
+          input.focus();
+        }
+      },
     });
 
-    if (userInput) {
-      return userInput;
-    } else {
-      return null
-    }
+    return userInput || null;
   }
 
   // * Iniciamos sesión

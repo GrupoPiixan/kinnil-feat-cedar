@@ -46,13 +46,15 @@ export class LoginComponent implements OnInit, AfterViewInit {
       showCancelButton: true,
       confirmButtonText: 'Send',
       cancelButtonText: 'Cancel',
+      didOpen: () => {
+        const input = Swal.getInput();
+        if (input) {
+          input.focus();
+        }
+      },
     });
 
-    if (userInput) {
-      return userInput;
-    } else {
-      return null
-    }
+    return userInput || null;
   }
   async login(): Promise<void> {
     try {
