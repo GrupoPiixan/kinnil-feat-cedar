@@ -258,4 +258,32 @@ export class AuthService {
     }
   }
 
+  // * Send email verification to specific email
+  async sendEmailVerification(): Promise<void> {
+    try {
+      await this.afAuth.currentUser.then((user) => {
+        user?.sendEmailVerification().then(() => {
+          // * Mostramos un mensaje de exito
+          Swal.fire({
+            title: 'Mail Sent',
+            text: 'We have sent you an email to verify your account',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }).catch(error => {
+          // * Mostramos un mensaje de error
+          Swal.fire({
+            title: 'Error',
+            text: 'An error occurred while sending the email, please try again later',
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        });
+      });
+    } catch (err) {
+      // * Mostramos un mensaje de error
+      console.log('Catch sendEmailVerification: ', err);
+    }
+  }
+
 }

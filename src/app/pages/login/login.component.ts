@@ -95,6 +95,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       }, 1500);
     }
   }
+
   async enableMfa() {
     try {
       const phoneNumber = this.MFAForm.value.tel;
@@ -107,7 +108,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         Swal.fire({
           title: 'Error',
           text: 'User not found',
-          icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
+          icon: 'error',
         });
         return;
       }
@@ -146,11 +147,19 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
     } catch (error: any) {
       console.error("log err", error);
-      Swal.fire({
-        title: 'Error',
-        text: error.message,
-        icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
-      });
+
+      const validateEmail = error.message.includes('auth/unverified-email');
+
+      if (validateEmail) {
+        this.mfaModal.hide();
+        this.authService.sendEmailVerification();
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: error.message,
+          icon: 'error',
+        });
+      }
     }
   }
 
