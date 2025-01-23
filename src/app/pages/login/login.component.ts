@@ -42,20 +42,20 @@ export class LoginComponent implements OnInit, AfterViewInit {
     const { value: userInput } = await Swal.fire({
       title: text,
       input: 'text',
-      inputPlaceholder: 'Code',
+      inputPlaceholder: 'Enter code here',
       showCancelButton: true,
       confirmButtonText: 'Send',
       cancelButtonText: 'Cancel',
       didOpen: () => {
         const input = Swal.getInput();
         if (input) {
-          input.focus();
+          input.focus(); // Asegura el foco en el input
         }
       },
     });
-
     return userInput || null;
   }
+
   async login(): Promise<void> {
     try {
       const { email, password } = this.loginForm.value;
@@ -132,7 +132,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
 
       // Ask user for the verification code.
-      const verificationCode = await this.showCustomPrompt("We have sent you a code, please enter it here");
+      const verificationCode = window.prompt("We have sent you a code, please enter it here");
       if (!verificationCode) {
         throw new Error('Verification code is null try again');
       }

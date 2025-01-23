@@ -43,23 +43,29 @@ export class AuthService {
     );
   }
   async showCustomPrompt(text: string) {
+    const recaptcha = document.getElementById('recaptcha-container-id');
+    if (recaptcha) recaptcha.style.display = 'none'; // Oculta temporalmente el reCAPTCHA
+
     const { value: userInput } = await Swal.fire({
       title: text,
       input: 'text',
-      inputPlaceholder: 'Code',
+      inputPlaceholder: 'Enter code here',
       showCancelButton: true,
       confirmButtonText: 'Send',
       cancelButtonText: 'Cancel',
       didOpen: () => {
         const input = Swal.getInput();
         if (input) {
-          input.focus();
+          input.focus(); // Asegura el foco en el input
         }
       },
     });
 
+    if (recaptcha) recaptcha.style.display = ''; // Reactiva el reCAPTCHA
+
     return userInput || null;
   }
+
 
   // * Iniciamos sesión
   async login(email: string, password: string): Promise<String> {
@@ -81,7 +87,7 @@ export class AuthService {
         };
         const phoneAuthProvider = new PhoneAuthProvider(auth);
         const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
-        let verificationCode = await this.showCustomPrompt("We have sent you a code, please enter it here");
+        let verificationCode = window.prompt("We have sent you a code, please enter it here");
         if (verificationCode !== null) {
           try {
             var cred = PhoneAuthProvider.credential(
