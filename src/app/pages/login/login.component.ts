@@ -150,6 +150,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         title: 'Error',
         text: error.message,
         icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
+      }).then(() => {
+        window.location.reload();
       });
     }
   }

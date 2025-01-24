@@ -257,5 +257,17 @@ export class AuthService {
       console.log('Catch restorePassword: ', err);
     }
   }
-
+  deleteUser(): void {
+    this.afAuth.signOut().then(() => {
+      this.lStorage.deleteLocalStorage('usuario');
+    });
+  }
+  async getUser(): Promise<any> {
+    let user = await this.afAuth.currentUser
+    if (!user?.multiFactor?.enrolledFactors.length) {
+      return {
+        status: false
+      }
+    }
+  }
 }

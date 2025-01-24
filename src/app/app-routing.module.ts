@@ -16,14 +16,14 @@ import { RhComponent } from './pages/rh/rh.component';
 import { PrivilegesComponent } from './pages/privileges/privileges.component';
 import { PrivilegesDetailComponent } from './pages/privileges-detail/privileges-detail.component';
 import { BombDetailComponent } from './pages/bomb-detail/bomb-detail.component';
-
+import { AuthGuard } from './guards/auth.guard';
 const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent, ...canActivate(redirectLoggedIn) },
-  { path: 'dashboard', component: DashboardComponent, ...canActivate(redirectUnauthorizedToLogin) },
+  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
   { path: 'machines', component: MachinesComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'machine-detail/:uid', component: MachineDetailComponent, ...canActivate(redirectUnauthorizedToLogin) },
-  { path: 'bomb-detail/:uid', component: BombDetailComponent, ...canActivate(redirectUnauthorizedToLogin)  },
+  { path: 'bomb-detail/:uid', component: BombDetailComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'display', component: DisplayComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'rh', component: RhComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'privileges', component: PrivilegesComponent, ...canActivate(redirectUnauthorizedToLogin) },
