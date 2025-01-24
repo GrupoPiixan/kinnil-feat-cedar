@@ -31,9 +31,11 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
 
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent): void {
-    console.log('Página está por ser refrescada o cerrada.');
-    this.authService.deleteUser();
+  async onBeforeUnload(event: BeforeUnloadEvent): Promise<void> {
+    const user = await this.afAuth.currentUser;
+    if (!user?.multiFactor?.enrolledFactors?.length) {
+      this.authService.deleteUser();
+    }
   }
 
   ngOnDestroy(): void {
