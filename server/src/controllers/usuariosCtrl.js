@@ -8,7 +8,7 @@ const saveUser = async (req = request, res = response) => {
 
   try {
     // * Creamos un usuario en firebase con correo y contraseña
-    const userCreate = await firebase.auth.createUser({ email, password });
+    const userCreate = await firebase.auth.createUser({ email, password, phoneNumber: telephone });
 
     // * Guardamos el usuario en la base de datos
     await firebase.db.doc(`/usuarios/${userCreate.uid}`).set({

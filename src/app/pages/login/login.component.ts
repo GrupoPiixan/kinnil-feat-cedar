@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, HostListener, OnDestroy } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import Swal from 'sweetalert2';
@@ -16,7 +16,7 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   showError: boolean = false;
   errorMessage: string = '';
 
@@ -28,6 +28,18 @@ export class LoginComponent implements OnInit, AfterViewInit {
   MFAForm = new FormGroup({
     tel: new FormControl('', [Validators.required, Validators.minLength(10)]),
   });
+
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent): void {
+    console.log('Página está por ser refrescada o cerrada.');
+    this.authService.deleteUser();
+  }
+
+  ngOnDestroy(): void {
+    this.authService.deleteUser();
+    console.log('El componente se está destruyendo.');
+  }
   emailRestore: string = '';
   private mfaModal: any;
   constructor(private authService: AuthService, private afAuth: AngularFireAuth) { }
@@ -95,6 +107,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       }, 1500);
     }
   }
+
   async enableMfa() {
     try {
       const phoneNumber = this.MFAForm.value.tel;
@@ -107,7 +120,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
         Swal.fire({
           title: 'Error',
           text: 'User not found',
-          icon: 'error', // Opciones: 'success', 'error', 'warning', 'info', 'question'
+          icon: 'error',
         });
         return;
       }
@@ -153,6 +166,19 @@ export class LoginComponent implements OnInit, AfterViewInit {
       }).then(() => {
         window.location.reload();
       });
+
+      const validateEmail = error.message.includes('auth/unverified-email');
+
+      if (validateEmail) {
+        this.mfaModal.hide();
+        this.authService.sendEmailVerification();
+      } else {
+        Swal.fire({
+          title: 'Error',
+          text: error.message,
+          icon: 'error',
+        });
+      }
     }
   }
 
