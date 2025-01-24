@@ -37,7 +37,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.authService.deleteUser();
+
     console.log('El componente se está destruyendo.');
   }
   emailRestore: string = '';
