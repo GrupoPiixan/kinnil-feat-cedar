@@ -77,7 +77,7 @@ export class LoginComponent implements OnInit, AfterViewInit, OnDestroy {
           case 'Success': {
             this.showError = false;
             this.errorMessage = '';
-            window.location.reload();
+            window.location.href = '/dashboard';
             break;
           }
           case 'MFA REQUIRED': {
