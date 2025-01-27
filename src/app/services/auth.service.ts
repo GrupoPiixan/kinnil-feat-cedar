@@ -1,16 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 // * Firebase
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import "firebase/auth";
 import { AngularFirestore } from '@angular/fire/compat/firestore';
-
+import firebase from 'firebase/compat/app';
 // * Utils
 import { LocalStorageService } from '../utils/local-storage.service';
 import { jsonUtils } from '../utils/json-utils';
-
+import {
+  getAuth,
+  RecaptchaVerifier,
+  getMultiFactorResolver,
+  PhoneAuthProvider,
+  PhoneMultiFactorGenerator
+} from "firebase/auth";
 @Injectable({
   providedIn: 'root'
 })
@@ -35,34 +42,94 @@ export class AuthService {
       })
     );
   }
+  async showCustomPrompt(text: string) {
+    const recaptcha = document.getElementById('recaptcha-container-id');
+    if (recaptcha) recaptcha.style.display = 'none'; // Oculta temporalmente el reCAPTCHA
+
+    const { value: userInput } = await Swal.fire({
+      title: text,
+      input: 'text',
+      inputPlaceholder: 'Enter code here',
+      showCancelButton: true,
+      confirmButtonText: 'Send',
+      cancelButtonText: 'Cancel',
+      didOpen: () => {
+        const input = Swal.getInput();
+        if (input) {
+          input.focus(); // Asegura el foco en el input
+        }
+      },
+    });
+
+    if (recaptcha) recaptcha.style.display = ''; // Reactiva el reCAPTCHA
+
+    return userInput || null;
+  }
+
 
   // * Iniciamos sesión
-  login(email: string, password: string): void {
+  async login(email: string, password: string): Promise<String> {
     try {
-      // * Iniciar sesion en el servicio de Firebase
-      this.afAuth.signInWithEmailAndPassword(email, password).then((user) => {
-        if (user) {
-          var userString = JSON.stringify(user);
-          // * Recargamos la página para redireccionar al dashboard
-          window.location.reload();
+      await this.afAuth.signInWithEmailAndPassword(email, password)
+      return "MFA REQUIRED"
+    } catch (error: any) {
+      if (error.code == 'auth/multi-factor-auth-required') {
+        const recaptchaParameters = {
+          size: 'invisible',
+          callback: (response: string) => { }
+        };
+        const auth = getAuth();
+        const recaptchaVerifier = new RecaptchaVerifier('recaptcha-container-id', recaptchaParameters, auth);
+        const resolver = getMultiFactorResolver(auth, error);
+        const phoneInfoOptions = {
+          multiFactorHint: resolver.hints[0],
+          session: resolver.session
+        };
+        const phoneAuthProvider = new PhoneAuthProvider(auth);
+        const verificationId = await phoneAuthProvider.verifyPhoneNumber(phoneInfoOptions, recaptchaVerifier)
+        let verificationCode = window.prompt("We have sent you a code, please enter it here");
+        if (verificationCode !== null) {
+          try {
+            var cred = PhoneAuthProvider.credential(
+              verificationId, verificationCode);
+            const multiFactorAssertion =
+              PhoneMultiFactorGenerator.assertion(cred);
+            await resolver.resolveSignIn(multiFactorAssertion);
+            return "Success"
+          } catch (error: any) {
+            if (error.code == 'auth/invalid-verification-code') {
+              Swal.fire({
+                title: 'Error',
+                text: "Invalid verification code, try again and send a new code",
+                icon: 'error',
+                confirmButtonText: 'Ok'
+              }).then(() => {
+                window.location.reload();
+              })
+            }
+
+          }
+
+        } else {
+          Swal.fire({
+            title: 'Error',
+            text: 'Verification code is null, try again',
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          }).then(() => {
+            window.location.reload();
+          })
+
+          return "Error"
         }
-      }).catch(error => {
-        // * Mostrar error si el servicio no funciona
-        switch (error.code) {
-          case 'auth/wrong-password':
-            window.alert('Error al intentar iniciar sesión');
-            break;
-          case 'auth/user-not-found':
-            window.alert('Este usuario no está registrado');
-            break;
-          default:
-            break;
-        }
-      });
-    } catch (err) {
-      // * Mostrar error
-      console.log('Catch login: ', err);
+
+      }
+      if (error.code == 'auth/invalid-login-credentials') {
+        return "Invalid credentials"
+      }
+      return "Error"
     }
+
   }
 
   validateSesion(data: any): void {
@@ -170,14 +237,58 @@ export class AuthService {
       // * Enviamos la petición para recuperar la contraseña
       this.afAuth.sendPasswordResetEmail(email).then(() => {
         // * Mostramos un mensaje de exito
-        window.alert(`Se ha enviado un correo a ${email} para restablecer la contraseña`);
+        Swal.fire({
+          title: 'Mail Sent',
+          text: 'We have sent you an email to reset your password',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        });
       }).catch(error => {
         // * Mostramos un mensaje de error
-        window.alert('Correo no reconocido, verifica que sea un correo válido y registrado en nuestra plataforma');
+        Swal.fire({
+          title: 'Error',
+          text: 'Email not recognized, verify that it is a valid email and registered in our platform',
+          icon: 'error',
+          confirmButtonText: 'Ok'
+        });
       });
     } catch (err) {
       // * Mostramos un mensaje de error
       console.log('Catch restorePassword: ', err);
+    }
+  }
+  deleteUser(): void {
+    this.afAuth.signOut().then(() => {
+      this.lStorage.deleteLocalStorage('usuario');
+    });
+  }
+
+
+  // * Send email verification to specific email
+  async sendEmailVerification(): Promise<void> {
+    try {
+      await this.afAuth.currentUser.then((user) => {
+        user?.sendEmailVerification().then(() => {
+          // * Mostramos un mensaje de exito
+          Swal.fire({
+            title: 'Mail Sent',
+            text: 'We have sent you an email to verify your account',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          });
+        }).catch(error => {
+          // * Mostramos un mensaje de error
+          Swal.fire({
+            title: 'Error',
+            text: 'An error occurred while sending the email, please try again later',
+            icon: 'error',
+            confirmButtonText: 'Ok'
+          });
+        });
+      });
+    } catch (err) {
+      // * Mostramos un mensaje de error
+      console.log('Catch sendEmailVerification: ', err);
     }
   }
 

@@ -23,7 +23,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'machines', component: MachinesComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'machine-detail/:uid', component: MachineDetailComponent, ...canActivate(redirectUnauthorizedToLogin) },
-  { path: 'bomb-detail/:uid', component: BombDetailComponent, ...canActivate(redirectUnauthorizedToLogin)  },
+  { path: 'bomb-detail/:uid', component: BombDetailComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'display', component: DisplayComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'rh', component: RhComponent, ...canActivate(redirectUnauthorizedToLogin) },
   { path: 'privileges', component: PrivilegesComponent, ...canActivate(redirectUnauthorizedToLogin) },
