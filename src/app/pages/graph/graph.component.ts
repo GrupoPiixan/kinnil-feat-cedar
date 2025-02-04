@@ -66,7 +66,7 @@ export class GraphComponent implements OnInit {
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        max: 350,
+        max: 400,
         splitLine: {
           show: false
         }
@@ -114,7 +114,7 @@ export class GraphComponent implements OnInit {
       yAxis: {
         type: 'value',
         boundaryGap: [0, '100%'],
-        max: 550,
+        max: 600,
         splitLine: {
           show: false
         }
